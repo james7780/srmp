@@ -14,13 +14,27 @@ var PORT = 8765;
 
 var net = require('net');
 
+var sockets = [];
+
+// Handle data recieved on a socket
+function socketData(data) {
+	console.log(data.toString());
+};
+
+// Handles new connections
 function serverListener(socket) { //'connection' listener
   console.log('server connected on port' + socket.address().port);
+
+  sockets.push(socket);
+
   socket.on('end', function() {
     console.log('server disconnected');
   });
   socket.write('hello\r\n');
   //socket.pipe(c);
+
+  socket.on('data', socketData);
+
 };
 
 var server = net.createServer(serverListener);
