@@ -6,13 +6,19 @@
 	- Manage player (client) connections to the game world
 	- Recieve player input
 	- Send world state to clients
+			- Full world state
+			- Sector state only
+			
+
 */
+
 
 // example code (may not work)
 
 var PORT = 8765;
 
 var net = require('net');
+var galaxyjs = require('./galaxy.js');				// the game world
 
 var sockets = [];
 
@@ -34,7 +40,15 @@ function serverListener(socket) { //'connection' listener
   //socket.pipe(c);
 
   socket.on('data', socketData);
+  
+  socket.on('state', function(data) {
+    socket.emit('state', "abc");
+    });
 
+	// Test we can get game world started
+	var Game = galaxyjs.Game;
+	var game = new Game();
+	game.initialise(1);
 };
 
 var server = net.createServer(serverListener);

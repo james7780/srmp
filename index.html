@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Star Raiders Multiplayer Client</title>
+
+    <script src="lib/socket.io.js"></script>
+    <!-- <script src="render.js"></script> -->
+    <!-- <script src="input.js"></script> -->
+    <!-- <script src="sound.js"></script> -->
+    <script src="client.js"></script>
+    <script src="lib/smoke.min.js"></script>
+    <script src="game.js"></script>
+<!--
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Orbitron:900|Abel">
+    <link rel="stylesheet" href="css/app.css">
+    <link rel="stylesheet" href="lib/smoke.css">
+    <link href='http://fonts.googleapis.com/css?family=Bowlby+One+SC' rel='stylesheet' type='text/css'>
+-->
+  </head>
+  <body>
+
+    <div id="outer">
+      <div id="logo">Star Raiders Multiplayer</div>
+      <canvas id="canvas" width="640" height="480" background="#000000"></canvas>
+      <audio id="audio"></audio>
+
+      <div id="hud">
+        <div id="buttons">
+          <button id="join">Join</button>
+          <button id="music">Music</button>
+        </div>
+
+        <div id="info">
+          <div>
+            <span id="player-count">0</span> players.
+          </div>
+          <div>
+            <span id="observer-count">0</span> observers.
+          </div>
+          <div>
+            <span id="average-lag">0</span> ms lag.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer style="clear:both;">
+    <p>
+    (c) James Higgs 2012
+    </p>
+    </footer>
+
+    <a href="http://github.com/james7780/srmp">SRMP on GitHub</a>
+  </body>
+</html>
