@@ -4,6 +4,7 @@
 
 	- Manage game world
 	- Manage player (client) connections to the game world
+			- Send "START" and "GAME OVER" messages
 	- Recieve player input
 	- Send world state to clients
 			- Full world state
@@ -41,7 +42,8 @@ function serverListener(socket) { //'connection' listener
 
   socket.on('data', socketData);
   
-  socket.on('state', function(data) {
+  socket.on('state', function() {
+    console.log('state request from ' + socket.address().port);		// externaladdress?
     socket.emit('state', "abc");
     });
 

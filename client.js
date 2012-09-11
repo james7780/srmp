@@ -2,11 +2,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Globals
 //socket = io.connect('http://o.smus.com:5050');
-socket = io.connect('http://localhost:5050');
+socket = io.connect('http://localhost:8765');
 game = new Game();
 playerId = null;
 totalSkew = 0;
 
+// test
+// Fetch game state from the server.
+socket.emit('data', "ping!");
+
+
+
+/*
 var renderer = new Renderer(game);
 var input = new Input(game);
 sound = new SoundManager();
@@ -112,7 +119,7 @@ game.on('victory', function(data) {
 game.on('dead', function(data) {
   // Someone died :(
 });
-
+*/
 
 function gameover(msg) {
   smoke.confirm(msg, function(yes) {
