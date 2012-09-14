@@ -48,18 +48,19 @@ function startClient(address) {
 	socket.on('state', function(data) {
 	  game.load(data.state);
 	});
-	
+*/
 	// A new client joins.
 	socket.on('join', function(data) {
-	  console.log('recv join', data);
-	  game.join(data.name);
+	  console.log('recv join: ', data.name);
+	  //game.join(data.name);
 	  if (data.isme) {
 	    playerId = data.name;
 	    // Set the hash
 	    window.location.hash = '#' + data.name;
+	    //alert("join acknowledged");
 	  }
 	});
-	
+/*
 	// A client leaves.
 	socket.on('leave', function(data) {
 	  console.log('recv leave', data);

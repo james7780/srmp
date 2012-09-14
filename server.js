@@ -53,9 +53,16 @@ function serverListener(socket) { //'connection' listener
     socket.emit('state', "abc");
     });
 
-  socket.on('join', function() {
-    console.log('join request from ' + socket.id);		// externaladdress?
-    socket.emit('join', "abc");
+  socket.on('join', function(data) {
+    console.log('join request from ' + data.name);		//socket.id);		// externaladdress?
+    // Broadcast that client has joined
+    socket.broadcast.emit('join', data);
+    // And tell client that is has joined
+  	data.isme = true;
+    socket.emit('join', data);
+
+		// Push game state to client
+		socket.emit('state', {state: game.getState()});
     });
 
 	// Test we can get game world started
