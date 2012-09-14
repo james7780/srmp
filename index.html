@@ -4,11 +4,11 @@
     <title>Star Raiders Multiplayer Client</title>
 
     <script src="lib/socket.io.js"></script>
-    <!-- <script src="render.js"></script> -->
     <!-- <script src="input.js"></script> -->
     <!-- <script src="sound.js"></script> -->
     <script src="lib/smoke.min.js"></script>
     <script src="galaxy.js"></script>
+    <script src="render.js"></script>
     <script src="client.js"></script>
 <!--
     <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Orbitron:900|Abel">
@@ -20,13 +20,17 @@
   <body>
 
     <div id="outer">
-      <div id="logo">Star Raiders Multiplayer</div>
+      <div id="logo">
+      	Star Raiders Multiplayer
+      	<button id="connect" onClick=startClient('net://localhost:8765');>Connect To Server</button>
+      </div>
+
       <canvas id="canvas" width="640" height="480"></canvas>
       <audio id="audio"></audio>
 
       <div id="hud">
         <div id="buttons">
-          <button id="join">Join</button>
+          <button id="join" onClick=joinClient();>Join</button>
           <button id="music">Music</button>
         </div>
 
