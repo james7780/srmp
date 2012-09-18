@@ -10,6 +10,9 @@
 (function(exports) {
 
 // objects (FUTURE: inherit all game objects from base class)
+/**
+ * Player object
+ */
 function Player(id, name, x, y)
 {
 	//assert ((this instanceof Player), "Must use new operator!");
@@ -24,10 +27,22 @@ function Player(id, name, x, y)
 
 	// Test
 	Player.prototype.updatePlayer = function () {
-		alert("updatPlayer, player name = ", this.name);
+		alert("updatePlayer, player name = ", this.name);
 	}
 }
 
+// Create a new state for this player in the future
+Player.prototype.computeState = function(delta) {
+  // TODO: dampen vx and vy slightly?
+  var newPlayer = new this.constructor(this.toJSON());
+  newPlayer.x += 1;	//this.vx * delta/10;
+  newPlayer.y += 1;		//this.vy * delta/10;
+  return newPlayer;
+};
+
+/**
+ * Starbase object
+ */
 function StarBase(id, x, y, health)
 {
 	//assert ((this instanceof StarBase), "Must use new operator!");
@@ -38,10 +53,22 @@ function StarBase(id, x, y, health)
 	this.health = health;
 }
 
-function ZylonShip(id, x, y, health)
+// Create a new state for this starbase in the future
+StarBase.prototype.computeState = function(delta) {
+  // TODO: dampen vx and vy slightly?
+  var newStarbase = new this.constructor(this.toJSON());
+  newStarbase.x += 1;	//this.vx * delta/10;
+  newStarbase.y += 1;		//this.vy * delta/10;
+  return newStarbase;
+};
+
+/**
+ * Zylon fighter object
+ */
+function ZylonFighter(id, x, y, health)
 {
-	//assert ((this instanceof ZylonShip), "Must use new operator!");
-	if (!(this instanceof ZylonShip)) { console.log("Must use new operator!"); };
+	//assert ((this instanceof ZylonFighter), "Must use new operator!");
+	if (!(this instanceof ZylonFighter)) { console.log("Must use new operator!"); };
 	this.id = id;
 	this.x = x;
 	this.y = y;
@@ -49,6 +76,64 @@ function ZylonShip(id, x, y, health)
 	this.behaviour = 0;
 	this.counter = 0;			// behaviour-related counter
 }
+
+// Create a new state for this zylon fighter in the future
+ZylonFighter.prototype.computeState = function(delta) {
+  // TODO: dampen vx and vy slightly?
+  var newFighter = new this.constructor(this.toJSON());
+  newFighter.x += 1;	//this.vx * delta/10;
+  newFighter.y += 1;		//this.vy * delta/10;
+  return newFighter;
+};
+
+/**
+ * Zylon cruiser object
+ */
+function ZylonCruiser(id, x, y, health)
+{
+	//assert ((this instanceof ZylonCruiser), "Must use new operator!");
+	if (!(this instanceof ZylonCruiser)) { console.log("Must use new operator!"); };
+	this.id = id;
+	this.x = x;
+	this.y = y;
+	this.health = health;
+	this.behaviour = 0;
+	this.counter = 0;			// behaviour-related counter
+}
+
+// Create a new state for this zylon cruiser in the future
+ZylonCruiser.prototype.computeState = function(delta) {
+  // TODO: dampen vx and vy slightly?
+  var newCruiser = new this.constructor(this.toJSON());
+  newCruiser.x += 1;	//this.vx * delta/10;
+  newCruiser.y += 1;		//this.vy * delta/10;
+  return newCruiser;
+};
+
+/**
+ * Zylon Basestar object
+ */
+function ZylonBasestar(id, x, y, health)
+{
+	//assert ((this instanceof ZylonBasestar), "Must use new operator!");
+	if (!(this instanceof ZylonBasestar)) { console.log("Must use new operator!"); };
+	this.id = id;
+	this.x = x;
+	this.y = y;
+	this.health = health;
+	this.behaviour = 0;
+	this.counter = 0;			// behaviour-related counter
+}
+
+// Create a new state for this zylon basestar in the future
+ZylonBasestar.prototype.computeState = function(delta) {
+  // TODO: dampen vx and vy slightly?
+  var newBasestar = new this.constructor(this.toJSON());
+ newBasestar.x += 1;	//this.vx * delta/10;
+  newBasestar.y += 1;		//this.vy * delta/10;
+  return newBasestar;
+};
+
 
 /**
  * The game instance (singleton) that's shared across all clients and the server
@@ -89,12 +174,11 @@ Game.prototype.initialise = function(difficulty) {
 	id += 1;
 	this.objects[id] = new StarBase(id, 10, 10, 100);
 	id += 1;
-	this.objects[id] = new ZylonShip(id, 11, 11, 100);
+	this.objects[id] = new ZylonFighter(id, 11, 11, 100);
 	id += 1;
-	this.objects[id] = new ZylonShip(id, 21, 21, 100);
+	this.objects[id] = new ZylonFighter(id, 21, 21, 100);
 	id += 1;
-	
-	
+
 };
 
 
@@ -102,7 +186,7 @@ Game.prototype.initialise = function(difficulty) {
  * Step the game world forward by 1 tick (UPDATE_INTERVAL milliseconds)
  */
 Game.prototype.updateState = function(delta) {
-	/*
+
   var newState = {
     objects: {},
     timeStamp: this.state.timeStamp + delta
@@ -116,7 +200,7 @@ Game.prototype.updateState = function(delta) {
       newObjects[obj.id] = obj.computeState(delta);
     }
   }
-
+/*
   // Largest object.
   var largest = null;
   // Total area.
@@ -160,8 +244,56 @@ Game.prototype.updateState = function(delta) {
   return newState;
 };
 
+/**
+ * Save the game state.
+ * @return {object} JSON of the game state
+ */
+Game.prototype.getState = function() {
+  var serialized = {
+    objects: {},
+    timeStamp: this.state.timeStamp
+  };
+  for (var id in this.state.objects) {
+    var obj = this.state.objects[id];
+    // Serialize to JSON!
+    serialized.objects[id] = obj.toJSON();
+  }
+
+  return serialized;
+};
+
+/**
+ * Load the game state.
+ * @param {object} gameState JSON of the game state
+ */
+Game.prototype.loadState = function(stateIn) {
+  //console.log(savedState.objects);
+  var objects = stateIn.objects;
+  this.state = {
+    objects: {},
+    timeStamp: stateIn.timeStamp.valueOf()
+  }
+  for (var id in objects) {
+    var obj = objects[id];
+/*    
+    // Depending on type, instantiate.
+    if (obj.type == 'blob') {
+      this.state.objects[obj.id] = new Blob(obj);
+    } else if (obj.type == 'player') {
+      this.state.objects[obj.id] = new Player(obj);
+    }
+*/
+    // Increment this.lastId
+    if (obj.id > this.lastId) {
+      this.lastId = obj.id;
+    }
+  }
+};
+
 exports.Game = Game;
 exports.Player = Player;
-exports.ZylonShip = ZylonShip;
+exports.ZylonFighter = ZylonFighter;
+exports.ZylonCruiser = ZylonCruiser;
+exports.ZylonBasestar = ZylonBasestar;
 
 })(typeof global === "undefined" ? window : exports);

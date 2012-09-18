@@ -44,11 +44,20 @@ function startClient(address) {
 	    document.querySelector('#join').style.display = 'none';
 	  }
 	});
-	
+*/	
 	socket.on('state', function(data) {
-	  game.load(data.state);
+	  //game.load(data.state);
+	  alert("state recv: " + data.timeStamp);
+	  document.getElementById('debugoutput').innerText = data.timeStamp.toString();
+	  
+	  game.loadState(data);
+   	  // Number of clients that aren't playing.
+	  document.getElementById('observer-count').innerText = game.getPlayerCount();
+	  document.getElementById('player-count').innerText = game.getPlayerCount();
+	  //document.getElementById('average-lag').innerText = Math.abs(updateDelta);  
+
 	});
-*/
+
 	// A new client joins.
 	socket.on('join', function(data) {
 	  console.log('recv join: ', data.name);
