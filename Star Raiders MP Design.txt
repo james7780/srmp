@@ -1,0 +1,106 @@
+Vision:
+~~~~~~
+
+- Remake of Star Raiders for modern systems.
+- Preserve gameplay (fun)
+- Multiplayer
+- Easier controls
+
+Alternate Names:
+- "Star Raiders Online"
+- "Star Raiders Universe"
+
+
+Technical:
+
+Platforms? (PC/PSP/Vita/Android/iOS?)
+C++ or C#?
+Multiplayer (networking) engine? (node.js?)
+OpenGL gfx (WebGL?)
+
+
+
+Multiplayer:
+
+- Server manages game world
+- Server gets input from clients
+- Server broadcasts game world deltas to clients
+	- 10 per sec?
+	- Only relevant info sent to each client
+- Client must interpolate object positions
+	- display is 30 to 60 fps
+	- object position only updated max 10fps from server
+	- interp only neccessary for objects visible to the player
+- Mplayer chat/text
+- Hyperwarp to other player area
+- Refuel other player (fuel transfer)
+- Game modes
+	- Single player
+	- Coop vs Zylons (up to 8 players?)
+		- If player joins, then hyperspace jump is detected by Zylons and they launch a new fleet
+	- Player vs player? (Zylon player vs Atarian player?)
+	- Starbase vs Basestar
+		- 1st team to destroy the other team's starbase wins
+
+
+https://developer.valvesoftware.com/wiki/Networking_Entities
+
+Design/gameplay inspiration:
+- Star Raiders (8-bit)
+- Starhawk (1977)
+- Star Fire (1979)
+- Star Trek
+- Solaris
+- Starmaster (Activision)
+
+SCREENS:
+1. Title
+2. Multiplayer
+	- Start / Join game / Global Ranking
+3. Fore/Aft view
+4. Galactic chart
+5. Long range scan
+6. Docking
+7. Score/Ranking (same as global ranking)
+
+
+Objects:
+
+Starbase
+	- Does not move
+	- Used for resupply
+	- Heavily shielded (1000 heal
+
+Zylon fighter
+	- Fast moving
+	- No shield
+
+Zylon cruiser
+	- Slower moving
+	- Lightly shielded
+	- Patrol pattern (around basestar)
+	- Do not attack unless provoked
+
+Zylon Basestar
+	- Slower moving
+	- Heavily shielded
+	- Can only be attacked from close range
+
+Zylon fleets (collection of basestar + cruisers + fighter) will surround a Starbase
+and eventually destroy it. They will only attempt to surround 1 starbase at a time. (For multiplayer with 4 players or more, we could change this rule).
+
+Meteor
+	- Fast moving
+	- Can damage your ship (even with shields up)
+	- Destroy your ship if shields down
+
+
+Tables:
+	Ship damage (good/damaged/destroyed)
+		- Guns damaged (can't fire)
+		- Engines damaged (slower)
+		- Attack computer damage (no target range, no target lock)
+		- Shield damage (flicker on and off)
+		- Long-range scan damaged (mirror image, or flickery)
+		- Sub-space radio (no status messages?)
+
