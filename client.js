@@ -46,28 +46,33 @@ function startClient(address) {
 	});
 */	
 	socket.on('state', function(data) {
-	  //game.load(data.state);
-	  alert("state recv: " + data.timeStamp);
-	  document.getElementById('debugoutput').innerText = data.timeStamp.toString();
-	  
-	  game.loadState(data);
-   	  // Number of clients that aren't playing.
-	  document.getElementById('observer-count').innerText = game.getPlayerCount();
-	  document.getElementById('player-count').innerText = game.getPlayerCount();
-	  //document.getElementById('average-lag').innerText = Math.abs(updateDelta);  
-
+		//game.load(data.state);
+		//alert("state recv: " + data.state.timeStamp);
+		document.getElementById('debugoutput').innerText = data.state.timeStamp.toString();
+		
+		game.loadState(data.state);
+		// Number of clients that aren't playing.
+		document.getElementById('observer-count').innerText = game.getPlayerCount();
+		document.getElementById('player-count').innerText = game.getPlayerCount();
+		//document.getElementById('average-lag').innerText = Math.abs(updateDelta);  
+		
+		renderer.render();	
 	});
 
-	// A new client joins.
+	// A new client has joined the game (could be me)
 	socket.on('join', function(data) {
-	  console.log('recv join: ', data.name);
-	  //game.join(data.name);
-	  if (data.isme) {
-	    playerId = data.name;
-	    // Set the hash
-	    window.location.hash = '#' + data.name;
-	    //alert("join acknowledged");
-	  }
+		console.log('recv join: ', data.name);
+		//game.join(data.name);
+		document.getElementById('debugoutput').innerText = "Player " + data.name + " joined the game";
+		if (data.isme) {
+			playerId = data.name;
+			
+			// Set the hash
+			window.location.hash = '#' + data.name;
+			//alert("join acknowledged");
+		}
+		
+		renderer.render();
 	});
 /*
 	// A client leaves.
@@ -138,23 +143,29 @@ function startClient(address) {
 	*/
 	
 	function gameover(msg) {
-	  smoke.confirm(msg, function(yes) {
-	    if (yes && playerId) {
-	      socket.emit('join', {name: playerId});
-	    } else {
-	      smoke.signal('watching mode');
-	      // Show the button
-	      document.querySelector('#join').style.display = 'inline';
-	      playerId = null;
-	    }
-	    // Get a fresh state
-	    socket.emit('state');
-	  });
+		smoke.confirm(msg, function(yes) {
+			if (yes && playerId) {
+				socket.emit('join', {name: playerId});
+			} else {
+				smoke.signal('watching mode');
+				// Show the button
+				document.querySelector('#join').style.display = 'inline';
+				playerId = null;
+			}
+			// Get a fresh state
+			socket.emit('state');
+		});
 	}
 
 };
 
+/// Client wants to join the game
 function joinClient() {
 	socket.emit('join', {name: 'James'});
-	renderer.render();
 };
+
+/// Client says start the game
+function startGame() {
+	socket.emit('start', {name: 'James'});
+};
+

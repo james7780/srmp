@@ -20,12 +20,12 @@
   <body>
 
     <div id="outer">
-      <div id="logo">
-      	Star Raiders Multiplayer
-      	<button id="connect" onClick=startClient('net://localhost:8765');>Connect To Server</button>
+      <div id="logo">Star Raiders Multiplayer</div>
+      <div id="buttons">
+        <button id="connect" onClick=startClient('net://localhost:8765');>Connect To Server</button>
+        <button id="start" onClick=startGame();>Start Game</button>
       </div>
-	    <div id="debugoutput">...debug...
-	    </div>
+	    <div id="debugoutput">...debug...</div>
 
       <canvas id="canvas" width="640" height="480"></canvas>
       <audio id="audio"></audio>

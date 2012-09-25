@@ -21,14 +21,71 @@ var CanvasRenderer = function(game) {
 };
 
 CanvasRenderer.prototype.render = function() {
-  this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-	this.context.beginPath();
-	this.context.rect(188, 50, 200, 100);
-	this.context.fillStyle = '#8ED6FF';
-	this.context.fill();
-	this.context.lineWidth = 5;
-	this.context.strokeStyle = 'black';
-	this.context.stroke();
+ 	this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+	
+	for (var id in game.objects) {
+		var obj = game.objects[id];
+		if (obj.type == "player") {
+			var x = obj.x;
+			var y = obj.y;
+			var name = obj.name;
+			//this.context.rect(x, y, 2, 2);
+			this.drawRect(x, y, 2, 2, 'blue', 1);
+			this.context.font = '8pt Calibri';
+			this.context.textBaseline = "top";
+			this.context.lineWidth = 1;
+			this.context.fillStyle = 'blue';
+			this.context.fillText(name, x, y);
+		}
+		else if (obj.type == "starbase") {
+			var x = obj.x;
+			var y = obj.y;
+			var name = obj.name;
+			//this.context.rect(x, y, 2, 2);
+			this.drawRect(x, y, 3, 3, 'blue', 2);
+			this.context.font = '8pt Calibri';
+			this.context.textBaseline = "top";
+			this.context.lineWidth = 1;
+			this.context.fillStyle = 'green';
+			this.context.fillText('starbase', x, y);
+		}
+		else if (obj.type == "basestar") {
+			var x = obj.x;
+			var y = obj.y;
+			//var name = obj.name;
+			this.drawRect(x, y, 3, 3, 'red', 1);
+			this.context.font = '8pt Calibri';
+			this.context.textBaseline = "top";
+			this.context.lineWidth = 1;
+			this.context.fillStyle = 'red';
+			this.context.fillText('basestar', x, y);
+		}
+		else if (obj.type == "fighter") {
+			var x = obj.x;
+			var y = obj.y;
+			//var name = obj.name;
+			this.drawRect(x, y, 2, 1, 'red', 1);
+			this.context.font = '8pt Calibri';
+			this.context.textBaseline = "top";
+			this.context.lineWidth = 1;
+			this.context.fillStyle = 'red';
+			this.context.fillText('fighter', x, y);
+		}
+		else if (obj.type == "cruiser") {
+			var x = obj.x;
+			var y = obj.y;
+			//var name = obj.name;
+			this.drawRect(x, y, 3, 1, 'red', 2);
+			this.context.font = '8pt Calibri';
+			this.context.textBaseline = "top";
+			this.context.lineWidth = 1;
+			this.context.fillStyle = 'red';
+			this.context.fillText('cruiser', x, y);
+		}
+	}	// next object
+	
+	
+	
 
 /*
   var objects = this.game.state.objects;
@@ -70,6 +127,16 @@ CanvasRenderer.prototype.renderObject_ = function(obj) {
   }
 
 };
+
+CanvasRenderer.prototype.drawRect = function(x, y, w, h, colour, linewidth) {
+ 	var ctx = this.context;
+	ctx.beginPath();
+	ctx.lineWidth = linewidth;
+	ctx.strokeStyle = colour;
+	ctx.rect(x, y, w, h);
+	ctx.stroke();
+};
+
 
 exports.Renderer = CanvasRenderer;
 
