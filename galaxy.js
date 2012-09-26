@@ -170,6 +170,9 @@ var Game = function() {
 };
 
 // defines (magic numbers)
+// Radius of galaxy = 100000 "centrons" (metres)
+Game.GALAXY_RADIUS = 100000;
+Game.SECTOR_SIZE = 10000;
 Game.UPDATE_INTERVAL = 100;				// ten times a second
 Game.MAX_DELTA = 10000;
 Game.TARGET_LATENCY = 1000; // Maximum latency skew.
@@ -183,29 +186,30 @@ Game.prototype.initialise = function(difficulty) {
 	
 	// When we start the game, we should randomly generate the game objects, but
 	// the players should not be removed.
+	var sx = Game.GALAXY_RADIUS;
 	
 	var id = 1;
 	this.objects[id] = new Player(id, "player1", 0, 0);
 	id += 1;
-	this.objects[id] = new StarBase(id, Math.random() * 200, Math.random() * 200, 100);
+	this.objects[id] = new StarBase(id, Math.random() * sx, Math.random() * sx, 100);
 	id += 1;
-	this.objects[id] = new StarBase(id, Math.random() * 200, Math.random() * 200, 100);
+	this.objects[id] = new StarBase(id, Math.random() * sx, Math.random() * sx, 100);
 	id += 1;
-	this.objects[id] = new StarBase(id, Math.random() * 200, Math.random() * 200, 100);
+	this.objects[id] = new StarBase(id, Math.random() * sx, Math.random() * sx, 100);
 	id += 1;
-	this.objects[id] = new StarBase(id, Math.random() * 200, Math.random() * 200, 100);
+	this.objects[id] = new StarBase(id, Math.random() * sx, Math.random() * sx, 100);
 	id += 1;
-	this.objects[id] = new ZylonBasestar(id, Math.random() * 200, Math.random() * 200, 100);
+	this.objects[id] = new ZylonBasestar(id, Math.random() * sx, Math.random() * sx, 100);
 	id += 1;
-	this.objects[id] = new ZylonBasestar(id, Math.random() * 200, Math.random() * 200, 100);
+	this.objects[id] = new ZylonBasestar(id, Math.random() * sx, Math.random() * sx, 100);
 	id += 1;
-	this.objects[id] = new ZylonFighter(id, Math.random() * 200, Math.random() * 200, 100);
+	this.objects[id] = new ZylonFighter(id, Math.random() * sx, Math.random() * sx, 100);
 	id += 1;
-	this.objects[id] = new ZylonFighter(id, Math.random() * 200, Math.random() * 200, 100);
+	this.objects[id] = new ZylonFighter(id, Math.random() * sx, Math.random() * sx, 100);
 	id += 1;
-	this.objects[id] = new ZylonCruiser(id, Math.random() * 200, Math.random() * 200, 100);
+	this.objects[id] = new ZylonCruiser(id, Math.random() * sx, Math.random() * sx, 100);
 	id += 1;
-	this.objects[id] = new ZylonCruiser(id, Math.random() * 200, Math.random() * 200, 100);
+	this.objects[id] = new ZylonCruiser(id, Math.random() * sx, Math.random() * sx, 100);
 	id += 1;
 
 	this.lastId = id - 1;
@@ -214,7 +218,7 @@ Game.prototype.initialise = function(difficulty) {
 /// Add a player to the game
 Game.prototype.addPlayer = function(name) {
 	var id = this.lastId + 1;
-	this.objects[id] = new Player(id, name, Math.random() * 200, Math.random() * 200);
+	this.objects[id] = new Player(id, name, Math.random() * Game.GALAXY_RADIUS, Math.random() * Game.GALAXY_RADIUS);
 	this.lastId = id;
 	console.log("added player " + name + " at " + this.objects[id].x + "," + this.objects[id].y);
 };

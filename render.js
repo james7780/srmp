@@ -21,13 +21,16 @@ var CanvasRenderer = function(game) {
 };
 
 CanvasRenderer.prototype.render = function() {
+	var sx = this.canvas.width;
+	var sy = this.canvas.height;
+	
  	this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 	
 	for (var id in game.objects) {
 		var obj = game.objects[id];
 		if (obj.type == "player") {
-			var x = obj.x;
-			var y = obj.y;
+			var x = obj.x * sx / Game.GALAXY_RADIUS;
+			var y = obj.y * sy / Game.GALAXY_RADIUS;;
 			var name = obj.name;
 			//this.context.rect(x, y, 2, 2);
 			this.drawRect(x, y, 2, 2, 'blue', 1);
@@ -38,8 +41,8 @@ CanvasRenderer.prototype.render = function() {
 			this.context.fillText(name, x, y);
 		}
 		else if (obj.type == "starbase") {
-			var x = obj.x;
-			var y = obj.y;
+			var x = obj.x * sx / Game.GALAXY_RADIUS;
+			var y = obj.y * sy / Game.GALAXY_RADIUS;;
 			var name = obj.name;
 			//this.context.rect(x, y, 2, 2);
 			this.drawRect(x, y, 3, 3, 'blue', 2);
@@ -50,8 +53,8 @@ CanvasRenderer.prototype.render = function() {
 			this.context.fillText('starbase', x, y);
 		}
 		else if (obj.type == "basestar") {
-			var x = obj.x;
-			var y = obj.y;
+			var x = obj.x * sx / Game.GALAXY_RADIUS;
+			var y = obj.y * sy / Game.GALAXY_RADIUS;;
 			//var name = obj.name;
 			this.drawRect(x, y, 3, 3, 'red', 1);
 			this.context.font = '8pt Calibri';
@@ -61,8 +64,8 @@ CanvasRenderer.prototype.render = function() {
 			this.context.fillText('basestar', x, y);
 		}
 		else if (obj.type == "fighter") {
-			var x = obj.x;
-			var y = obj.y;
+			var x = obj.x * sx / Game.GALAXY_RADIUS;
+			var y = obj.y * sy / Game.GALAXY_RADIUS;;
 			//var name = obj.name;
 			this.drawRect(x, y, 2, 1, 'red', 1);
 			this.context.font = '8pt Calibri';
@@ -72,8 +75,8 @@ CanvasRenderer.prototype.render = function() {
 			this.context.fillText('fighter', x, y);
 		}
 		else if (obj.type == "cruiser") {
-			var x = obj.x;
-			var y = obj.y;
+			var x = obj.x * sx / Game.GALAXY_RADIUS;
+			var y = obj.y * sy / Game.GALAXY_RADIUS;;
 			//var name = obj.name;
 			this.drawRect(x, y, 3, 1, 'red', 2);
 			this.context.font = '8pt Calibri';
