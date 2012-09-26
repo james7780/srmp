@@ -25,6 +25,17 @@ CanvasRenderer.prototype.render = function() {
 	var sy = this.canvas.height;
 	
  	this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+	// draw grid
+	this.drawRect(0, 0, sx, sy, 'grey', 1);
+	var dx = sx / Game.NUM_SECTORS_X;
+	for (var i = 1; i < Game.NUM_SECTORS_X; i++) {
+		this.drawLine(dx * i, 0, dx * i, sy, 'grey', 1);
+	}
+	var dy = sy / Game.NUM_SECTORS_Y;
+	for (var i = 1; i < Game.NUM_SECTORS_Y; i++) {
+		this.drawLine(0, dy * i, sx, dy * i, 'grey', 1);
+	}
 	
 	for (var id in game.objects) {
 		var obj = game.objects[id];
@@ -129,6 +140,16 @@ CanvasRenderer.prototype.renderObject_ = function(obj) {
     ctx.fillText(obj.id, obj.x, obj.y);
   }
 
+};
+
+CanvasRenderer.prototype.drawLine = function(x1, y1, x2, y2, colour, linewidth) {
+ 	var ctx = this.context;
+	ctx.beginPath();
+	ctx.lineWidth = linewidth;
+	ctx.strokeStyle = colour;
+	ctx.moveTo(x1, y1);
+	ctx.lineTo(x2, y2);
+	ctx.stroke();
 };
 
 CanvasRenderer.prototype.drawRect = function(x, y, w, h, colour, linewidth) {

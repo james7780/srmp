@@ -21,37 +21,66 @@ var io = require('socket.io').listen(8765);					// have to have "npm install soc
 
 var galaxyjs = require('./galaxy.js');				// the game world
 
-var sockets = [];
+var socketList = [];
+
+var intervalId;
 
 // Handle data recieved on a socket
 function socketData(data) {
 	console.log(data.toString());
 };
 
+// Update game tick
+function updateGame(game) {
+	console.log('game tick: ' + game.tickCount);
+	game.updateState(1000);
+	// Push game state to clients
+	var socket = socketList[0];
+	if (socket) {
+		socket.broadcast.emit('state', {state: game.getState()});
+		socket.emit('state', {state: game.getState()});
+	}
+};
+
 // Handles new connections
 function serverListener(socket) { //'connection' listener
 	//console.log('server connected on port' + socket.options.port);
+	console.log('client connected: ' + socket.id);
 
-	console.log('server connected: ' + socket.id);
-
- 	//sockets.push(socket);
+ 	socketList.push(socket);
 
 	socket.emit('hello\r\n');
 	//socket.pipe(c);
 
 	socket.on('start', function(data) {
 		console.log('start request from ' + data.name + ' (' + socket.id + ')');
-		game.initialise(1);
-		
-		// Broadcast start message
-		socket.broadcast.emit('start', data);
-
-		// Broadcast game state to clients
-		socket.emit('state', {state: game.getState()});
+		// Can only start game if it's not yet started (doh!)
+		if (0 == game.tickCount) {
+			game.initialise(1);
+			game.start();
+/*
+			intervalId = setInterval(function() {
+																	console.log('tick: ' + game.tickCount);
+																	game.updateState(1000);
+																	// Push game state to clients
+																	socket.broadcast.emit('state', {state: game.getState()});
+																	socket.emit('state', {state: game.getState()});
+																}, 1000);				// game tick callback
+*/
+			intervalId = setInterval(updateGame, 500, game);
+						
+			// Broadcast start message
+			socket.broadcast.emit('start', data);
+			socket.emit('start', data);
+	
+			// Broadcast game state to clients
+			socket.emit('state', {state: game.getState()});
+		}
 	});
 
 	socket.on('end', function() {
 		console.log('server disconnected');
+		clearInterval(intervalId);
 	});
 
 	socket.on('data', socketData);

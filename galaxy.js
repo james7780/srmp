@@ -16,6 +16,10 @@ function toJSON(object) {
 		if (object.hasOwnProperty(prop)) {
 			//console.log("adding property " + prop);
 			json[prop] = object[prop];
+			// shorten numbers for network transmit
+			if (typeof json[prop] == 'number') {
+				json[prop] = json[prop].toFixed(3);			// limit to 3 decimal places (could probably reduce to 1)
+			}
 		}
 	}
 	return json;
@@ -172,7 +176,8 @@ var Game = function() {
 // defines (magic numbers)
 // Radius of galaxy = 100000 "centrons" (metres)
 Game.GALAXY_RADIUS = 100000;
-Game.SECTOR_SIZE = 10000;
+Game.NUM_SECTORS_X = 10;
+Game.NUM_SECTORS_Y = 8;
 Game.UPDATE_INTERVAL = 100;				// ten times a second
 Game.MAX_DELTA = 10000;
 Game.TARGET_LATENCY = 1000; // Maximum latency skew.
@@ -180,47 +185,91 @@ Game.TARGET_LATENCY = 1000; // Maximum latency skew.
 
 /// Initialise the game world
 /// @param {difficulty} Difficulty level (? to ?)
-
 Game.prototype.initialise = function(difficulty) {
-	this.tickCount = 111;
+	this.tickCount = 0;
 	
 	// When we start the game, we should randomly generate the game objects, but
 	// the players should not be removed.
 	var sx = Game.GALAXY_RADIUS;
-	
-	var id = 1;
-	this.objects[id] = new Player(id, "player1", 0, 0);
-	id += 1;
-	this.objects[id] = new StarBase(id, Math.random() * sx, Math.random() * sx, 100);
-	id += 1;
-	this.objects[id] = new StarBase(id, Math.random() * sx, Math.random() * sx, 100);
-	id += 1;
-	this.objects[id] = new StarBase(id, Math.random() * sx, Math.random() * sx, 100);
-	id += 1;
-	this.objects[id] = new StarBase(id, Math.random() * sx, Math.random() * sx, 100);
-	id += 1;
-	this.objects[id] = new ZylonBasestar(id, Math.random() * sx, Math.random() * sx, 100);
-	id += 1;
-	this.objects[id] = new ZylonBasestar(id, Math.random() * sx, Math.random() * sx, 100);
-	id += 1;
-	this.objects[id] = new ZylonFighter(id, Math.random() * sx, Math.random() * sx, 100);
-	id += 1;
-	this.objects[id] = new ZylonFighter(id, Math.random() * sx, Math.random() * sx, 100);
-	id += 1;
-	this.objects[id] = new ZylonCruiser(id, Math.random() * sx, Math.random() * sx, 100);
-	id += 1;
-	this.objects[id] = new ZylonCruiser(id, Math.random() * sx, Math.random() * sx, 100);
-	id += 1;
 
+	// TODO : game world should be generated according to difficulty level	
+	var id = 1;
+	var newObjects = {};
+
+	// add existing players (id's between 1 and 20)
+	for (id in this.objects) {
+		var obj = this.objects[id];
+		if (obj.type == "player") {
+			newObjects[obj.id] = new Player(obj.id, obj.name, obj.x, obj.y);
+		}
+	}
+		
+	// other objects start at id 20
+	id = 20;
+	newObjects[id] = new StarBase(id, Math.random() * sx, Math.random() * sx, 100);
+	id += 1;
+	newObjects[id] = new StarBase(id, Math.random() * sx, Math.random() * sx, 100);
+	id += 1;
+	newObjects[id] = new StarBase(id, Math.random() * sx, Math.random() * sx, 100);
+	id += 1;
+	newObjects[id] = new StarBase(id, Math.random() * sx, Math.random() * sx, 100);
+	id += 1;
+	newObjects[id] = new ZylonBasestar(id, Math.random() * sx, Math.random() * sx, 100);
+	id += 1;
+	newObjects[id] = new ZylonBasestar(id, Math.random() * sx, Math.random() * sx, 100);
+	id += 1;
+	newObjects[id] = new ZylonFighter(id, Math.random() * sx, Math.random() * sx, 100);
+	id += 1;
+	newObjects[id] = new ZylonFighter(id, Math.random() * sx, Math.random() * sx, 100);
+	id += 1;
+	newObjects[id] = new ZylonCruiser(id, Math.random() * sx, Math.random() * sx, 100);
+	id += 1;
+	newObjects[id] = new ZylonCruiser(id, Math.random() * sx, Math.random() * sx, 100);
+	id += 1;
+	
 	this.lastId = id - 1;
+	
+	this.objects = newObjects;
+};
+
+/// Set the game rolling
+Game.prototype.start = function() {
+	this.tickCount = 1;
+	
+	// Note: callback timer is handled by server.js
 };
 
 /// Add a player to the game
 Game.prototype.addPlayer = function(name) {
-	var id = this.lastId + 1;
-	this.objects[id] = new Player(id, name, Math.random() * Game.GALAXY_RADIUS, Math.random() * Game.GALAXY_RADIUS);
-	this.lastId = id;
-	console.log("added player " + name + " at " + this.objects[id].x + "," + this.objects[id].y);
+	// Find an empty "player slot"
+	for (var id = 1; id < 20; id++) {
+		var playerObj = this.objects[id];
+		if (playerObj == null) {
+			this.objects[id] = new Player(id, name, Math.random() * Game.GALAXY_RADIUS, Math.random() * Game.GALAXY_RADIUS);
+			console.log("added player " + name + " at " + this.objects[id].x + "," + this.objects[id].y);
+			break;
+		}
+	}
+	
+};
+
+/// Get the starbase which is closest to the specified coords
+Game.prototype.getNearestStarbase = function(x, y)
+{
+	var minDist = Game.GALAXY_RADIUS;
+	var closestStarbase;
+	for (var objId in this.objects) {
+		var obj = this.objects[objId];
+		if (obj.type == "starbase") {
+			var d = Math.sqrt(Math.pow((x - obj.x), 2) + Math.pow((y - obj.y), 2)); 
+			if (d < minDist) {
+				minDist = d;
+				closestStarbase = obj;
+			}
+		}
+	}
+	
+	return closestStarbase;
 };
 
 /**
@@ -228,17 +277,37 @@ Game.prototype.addPlayer = function(name) {
  */
 Game.prototype.updateState = function(delta) {
 
-	var newState = {
-		objects: {},
-		timeStamp: this.state.timeStamp + delta
-	};
-	var newObjects = newState.objects;
-	var objects = this.state.objects;
+	//var newState = {
+	//	objects: {},
+	//	timeStamp: this.state.timeStamp + delta
+	//};
+	//var newObjects = newState.objects;
+	//var objects = this.objects;
 	// Generate a new state based on the old one
-	for (var objId in objects) {
-		var obj = objects[objId];
-		if (!obj.dead) {
-			newObjects[obj.id] = obj.computeState(delta);
+	
+	// Update the game state
+	
+	for (var objId in this.objects) {
+		var obj = this.objects[objId];
+		if (obj.type == "basestar") {
+			// Find nearest starbase and move towards it
+			var closestStarbase = this.getNearestStarbase(obj.x, obj.y);
+			if (closestStarbase) {
+				// need vector class!
+				var d = Math.sqrt(Math.pow((closestStarbase.x - obj.x), 2) + Math.pow((closestStarbase.y - obj.y), 2));
+				obj.x += ((closestStarbase.x - obj.x) / d) * 100;
+				obj.y += ((closestStarbase.x - obj.y) / d) * 100;
+			}
+		}
+		else if (obj.type == "fighter") {
+			// Move around randomly
+			obj.x += 10;
+			obj.y += 10;
+		}
+		else if (obj.type == "cruiser") {
+			// Move around randomly
+			obj.x += 10;
+			obj.y += 10;
 		}
 	}
 /*
@@ -282,7 +351,7 @@ Game.prototype.updateState = function(delta) {
     this.callback_('victory', {id: largest.id});
   }
   */
-	return newState;
+	//return newState;
 };
 
 /**

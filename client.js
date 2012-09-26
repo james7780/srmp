@@ -48,7 +48,7 @@ function startClient(address) {
 	socket.on('state', function(data) {
 		//game.load(data.state);
 		//alert("state recv: " + data.state.timeStamp);
-		document.getElementById('debugoutput').innerText = data.state.timeStamp.toString();
+		//document.getElementById('debugoutput').innerText = data.state.timeStamp.toString();
 		
 		game.loadState(data.state);
 		// Number of clients that aren't playing.
@@ -71,9 +71,16 @@ function startClient(address) {
 			window.location.hash = '#' + data.name;
 			//alert("join acknowledged");
 		}
-		
+
 		renderer.render();
 	});
+	
+	socket.on('start', function(data) {
+		console.log("Player " + data.name + " has started the game");
+		document.getElementById('debugoutput').innerText = "Player " + data.name + " has started the game";
+		
+		// Set client "running" state here
+	});	
 /*
 	// A client leaves.
 	socket.on('leave', function(data) {
