@@ -1,0 +1,142 @@
+BODY
+{
+    FONT-SIZE: 12px;
+    COLOR: black;
+    FONT-FAMILY: Verdana;
+    BACKGROUND-COLOR: #fafad2
+}
+.Caption
+{
+    PADDING-LEFT: 2px;
+    FONT-WEIGHT: bold;
+    FONT-SIZE: 12px;
+    COLOR: white;
+    FONT-FAMILY: Verdana;
+    BACKGROUND-COLOR: steelblue
+}
+.Header
+{
+    FONT-WEIGHT: bold;
+    FONT-SIZE: 13px;
+    PADDING-BOTTOM: 1px;
+    COLOR: white;
+    PADDING-TOP: 1px;
+    FONT-FAMILY: Verdana;
+    BACKGROUND-COLOR: mediumseagreen;
+    TEXT-ALIGN: left
+}
+.subHeader
+{
+    PADDING-LEFT: 3px;
+    FONT-WEIGHT: bold;
+    FONT-SIZE: 12px;
+    PADDING-BOTTOM: 2px;
+    COLOR: white;
+    PADDING-TOP: 2px;
+    FONT-FAMILY: Verdana;
+    BACKGROUND-COLOR: black;
+    TEXT-ALIGN: left
+}
+.innerTable
+{
+    BORDER-RIGHT: dimgray 1px solid;
+    BORDER-TOP: dimgray 1px solid;
+    BORDER-LEFT: dimgray 1px solid;
+    BORDER-BOTTOM: dimgray 1px solid;
+    FONT-FAMILY: Verdana;
+    BACKGROUND-COLOR: silver
+}
+.Button
+{
+    BORDER-RIGHT: dimgray 1px solid;
+    BORDER-TOP: dimgray 1px solid;
+    FONT-WEIGHT: bold;
+    FONT-SIZE: 12px;
+    BORDER-LEFT: dimgray 1px solid;
+    BORDER-BOTTOM: dimgray 1px solid;
+    FONT-FAMILY: Verdana;
+    BACKGROUND-COLOR: darkgray
+}
+A:hover
+{
+    FONT-WEIGHT: bold;
+    COLOR: red;
+    FONT-FAMILY: Verdana;
+    TEXT-DECORATION: none
+}
+.greyCell
+{
+    BORDER-RIGHT: dimgray 1px solid;
+    BORDER-TOP: dimgray 1px solid;
+    FONT-SIZE: 12px;
+    BORDER-LEFT: dimgray 1px solid;
+    BORDER-BOTTOM: dimgray 1px solid;
+    FONT-FAMILY: Verdana;
+    BACKGROUND-COLOR: lightgrey
+}
+.mainHeader
+{
+    FONT-WEIGHT: bold;
+    FONT-SIZE: 17px;
+    COLOR: black;
+    FONT-FAMILY: Verdana;
+    BACKGROUND-COLOR: #3cb371
+}
+.lightgreyCell
+{
+    BORDER-RIGHT: darkgray 1px solid;
+    BORDER-TOP: darkgray 1px solid;
+    FONT-WEIGHT: bold;
+    BORDER-LEFT: darkgray 1px solid;
+    COLOR: midnightblue;
+    BORDER-BOTTOM: darkgray 1px solid;
+    BACKGROUND-COLOR: gainsboro
+}
+.Warning
+{
+    FONT-WEIGHT: bolder;
+    FONT-SIZE: 13px;
+    COLOR: red
+}
+
+.headline
+{
+		border-bottom: 1px solid #ccc;
+		vertical-align: bottom;
+}
+
+A
+{
+    FONT-WEIGHT: bold;
+    COLOR: blue;
+    FONT-FAMILY: Verdana;
+    TEXT-DECORATION: none
+}
+TABLE
+{
+    FONT-SIZE: 12px;
+    FONT-FAMILY: Verdana
+}
+H1
+{
+    PADDING-LEFT: 4pt;
+    FONT-WEIGHT: bold;
+    FONT-SIZE: 16pt;
+    COLOR: black;
+    FONT-FAMILY: Verdana;
+    BACKGROUND-COLOR: #3cb371
+}
+H2
+{
+		display: inline;
+    FONT-WEIGHT: bold;
+    FONT-SIZE: 14pt;
+    FONT-FAMILY: Verdana
+}
+H3
+{
+		DISPLAY: inline;
+    FONT-WEIGHT: bold;
+    FONT-SIZE: 12pt;
+    FONT-FAMILY: Verdana
+}

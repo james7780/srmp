@@ -21,14 +21,15 @@ var CanvasRenderer = function(game) {
 };
 
 CanvasRenderer.prototype.render = function() {
-	var sx = this.canvas.width;
-	var sy = this.canvas.height;
 	
  	this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-	// draw grid
+	// draw grid (keep square sector aspect ratio)
+	var sx = this.canvas.width;
+	var sy = (sx * Game.NUM_SECTORS_Y) / Game.NUM_SECTORS_X;
+
 	this.drawRect(0, 0, sx, sy, 'grey', 1);
-	var dx = sx / Game.NUM_SECTORS_X;
+	var dx = (sx - 1) / Game.NUM_SECTORS_X;
 	for (var i = 1; i < Game.NUM_SECTORS_X; i++) {
 		this.drawLine(dx * i, 0, dx * i, sy, 'grey', 1);
 	}
@@ -37,11 +38,12 @@ CanvasRenderer.prototype.render = function() {
 		this.drawLine(0, dy * i, sx, dy * i, 'grey', 1);
 	}
 	
+	var scale = sx / Game.GALAXY_RADIUS;
 	for (var id in game.objects) {
 		var obj = game.objects[id];
-		if (obj.type == "player") {
-			var x = obj.x * sx / Game.GALAXY_RADIUS;
-			var y = obj.y * sy / Game.GALAXY_RADIUS;;
+		if (obj.type == Game.PLAYERTYPEID) {
+			var x = obj.x * scale;
+			var y = obj.y * scale;
 			var name = obj.name;
 			//this.context.rect(x, y, 2, 2);
 			this.drawRect(x, y, 2, 2, 'blue', 1);
@@ -51,9 +53,9 @@ CanvasRenderer.prototype.render = function() {
 			this.context.fillStyle = 'blue';
 			this.context.fillText(name, x, y);
 		}
-		else if (obj.type == "starbase") {
-			var x = obj.x * sx / Game.GALAXY_RADIUS;
-			var y = obj.y * sy / Game.GALAXY_RADIUS;;
+		else if (obj.type == Game.STARBASETYPEID) {
+			var x = obj.x * scale;
+			var y = obj.y * scale;
 			var name = obj.name;
 			//this.context.rect(x, y, 2, 2);
 			this.drawRect(x, y, 3, 3, 'blue', 2);
@@ -63,9 +65,9 @@ CanvasRenderer.prototype.render = function() {
 			this.context.fillStyle = 'green';
 			this.context.fillText('starbase', x, y);
 		}
-		else if (obj.type == "basestar") {
-			var x = obj.x * sx / Game.GALAXY_RADIUS;
-			var y = obj.y * sy / Game.GALAXY_RADIUS;;
+		else if (obj.type == Game.BASESTARTYPEID) {
+			var x = obj.x * scale;
+			var y = obj.y * scale;
 			//var name = obj.name;
 			this.drawRect(x, y, 3, 3, 'red', 1);
 			this.context.font = '8pt Calibri';
@@ -74,9 +76,9 @@ CanvasRenderer.prototype.render = function() {
 			this.context.fillStyle = 'red';
 			this.context.fillText('basestar', x, y);
 		}
-		else if (obj.type == "fighter") {
-			var x = obj.x * sx / Game.GALAXY_RADIUS;
-			var y = obj.y * sy / Game.GALAXY_RADIUS;;
+		else if (obj.type == Game.FIGHTERTYPEID) {
+			var x = obj.x * scale;
+			var y = obj.y * scale;
 			//var name = obj.name;
 			this.drawRect(x, y, 2, 1, 'red', 1);
 			this.context.font = '8pt Calibri';
@@ -85,9 +87,9 @@ CanvasRenderer.prototype.render = function() {
 			this.context.fillStyle = 'red';
 			this.context.fillText('fighter', x, y);
 		}
-		else if (obj.type == "cruiser") {
-			var x = obj.x * sx / Game.GALAXY_RADIUS;
-			var y = obj.y * sy / Game.GALAXY_RADIUS;;
+		else if (obj.type == Game.CRUISERTYPEID) {
+			var x = obj.x * scale;
+			var y = obj.y * scale;
 			//var name = obj.name;
 			this.drawRect(x, y, 3, 1, 'red', 2);
 			this.context.font = '8pt Calibri';
@@ -126,6 +128,7 @@ CanvasRenderer.prototype.render = function() {
 
 };
 
+/* REF CODE
 CanvasRenderer.prototype.renderObject_ = function(obj) {
   var ctx = this.context;
   ctx.fillStyle = (obj.type == "player" ? 'green' : 'red');
@@ -141,6 +144,7 @@ CanvasRenderer.prototype.renderObject_ = function(obj) {
   }
 
 };
+*/
 
 CanvasRenderer.prototype.drawLine = function(x1, y1, x2, y2, colour, linewidth) {
  	var ctx = this.context;

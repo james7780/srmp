@@ -5,6 +5,8 @@ var renderer;
 /// Set up the client, using the specified connection
 function startClient(address) {
 	
+	document.getElementById('debugoutput').innerText = "Connecting to server " + address + "...";
+
 	// Globals
 	//socket = io.connect('http://localhost:8765');
 	socket = io.connect(address);
@@ -168,7 +170,10 @@ function startClient(address) {
 
 /// Client wants to join the game
 function joinClient() {
-	socket.emit('join', {name: 'James'});
+	var playerName = document.getElementById('playerName').value;
+	if (playerName.length != 0) {
+		socket.emit('join', {name: playerName});
+	}
 };
 
 /// Client says start the game

@@ -16,14 +16,16 @@ function toJSON(object) {
 		if (object.hasOwnProperty(prop)) {
 			//console.log("adding property " + prop);
 			json[prop] = object[prop];
-			// shorten numbers for network transmit
-			if (typeof json[prop] == 'number') {
+			// shorten float numbers for network transmit
+			if (typeof json[prop] == 'number' && prop != 'type' && prop != 'id') {
 				json[prop] = json[prop].toFixed(3);			// limit to 3 decimal places (could probably reduce to 1)
 			}
 		}
 	}
 	return json;
 };
+
+
 
 // objects (FUTURE: inherit all game objects from base class)
 /**
@@ -33,14 +35,14 @@ function Player(id, name, x, y)
 {
 	//assert ((this instanceof Player), "Must use new operator!");
 	if (!(this instanceof Player)) { console.log("Must use new operator!"); };
-	this.type = "player";
+	this.type = Game.PLAYERTYPEID;
 	this.id = id;
 	this.name = name;
 	this.x = x;
 	this.y = y;
-	this.fuel = 100;		// SR "energy max" = 9999
-	this.shield = 100;
-	this.damage = "";		// ascii mask for damaged components (eg: C for computer, L for long-range scan, etc)
+	this.fl = 100;					// "fuel". SR "energy max" = 9999
+	this.shd = 100;					// "shield"
+	this.dmg = "";					// "damage" ascii mask for damaged components (eg: C for computer, L for long-range scan, etc)
 
 	// Test
 	Player.prototype.updatePlayer = function () {
@@ -64,11 +66,11 @@ function StarBase(id, x, y, health)
 {
 	//assert ((this instanceof StarBase), "Must use new operator!");
 	if (!(this instanceof StarBase)) { console.log("Must use new operator!"); };
-	this.type = "starbase";
+	this.type = Game.STARBASETYPEID;
 	this.id = id;
 	this.x = x;
 	this.y = y;
-	this.health = health;
+	this.hp = health;	
 }
 
 // Create a new state for this starbase in the future
@@ -87,13 +89,13 @@ function ZylonFighter(id, x, y, health)
 {
 	//assert ((this instanceof ZylonFighter), "Must use new operator!");
 	if (!(this instanceof ZylonFighter)) { console.log("Must use new operator!"); };
-	this.type = "fighter";
+	this.type = Game.FIGHTERTYPEID;
 	this.id = id;
 	this.x = x;
 	this.y = y;
-	this.health = health;
-	this.behaviour = 0;
-	this.counter = 0;			// behaviour-related counter
+	this.hp = health;
+	this.bvr = 0;					// behaviour
+	this.bcnt = 0;				// behaviour-related counter
 }
 
 // Create a new state for this zylon fighter in the future
@@ -112,13 +114,13 @@ function ZylonCruiser(id, x, y, health)
 {
 	//assert ((this instanceof ZylonCruiser), "Must use new operator!");
 	if (!(this instanceof ZylonCruiser)) { console.log("Must use new operator!"); };
-	this.type = "cruiser";
+	this.type = Game.CRUISERTYPEID;
 	this.id = id;
 	this.x = x;
 	this.y = y;
-	this.health = health;
-	this.behaviour = 0;
-	this.counter = 0;			// behaviour-related counter
+	this.hp = health;
+	this.bvr = 0;					// behaviour
+	this.bcnt = 0;				// behaviour-related counter
 }
 
 // Create a new state for this zylon cruiser in the future
@@ -133,21 +135,21 @@ ZylonCruiser.prototype.computeState = function(delta) {
 /**
  * Zylon Basestar object
  */
-function ZylonBasestar(id, x, y, health)
+function ZylonBaseStar(id, x, y, health)
 {
 	//assert ((this instanceof ZylonBasestar), "Must use new operator!");
-	if (!(this instanceof ZylonBasestar)) { console.log("Must use new operator!"); };
-	this.type = "basestar";
+	if (!(this instanceof ZylonBaseStar)) { console.log("Must use new operator!"); };
+	this.type = Game.BASESTARTYPEID;
 	this.id = id;
 	this.x = x;
 	this.y = y;
-	this.health = health;
-	this.behaviour = 0;
-	this.counter = 0;			// behaviour-related counter
+	this.hp = health;
+	this.bvr = 0;					// behaviour
+	this.bcnt = 0;				// behaviour-related counter
 }
 
 // Create a new state for this zylon basestar in the future
-ZylonBasestar.prototype.computeState = function(delta) {
+ZylonBaseStar.prototype.computeState = function(delta) {
 	// TODO: dampen vx and vy slightly?
 	var newBasestar = new this.constructor(this.toJSON());
 	newBasestar.x += 1;	//this.vx * delta/10;
@@ -176,12 +178,21 @@ var Game = function() {
 // defines (magic numbers)
 // Radius of galaxy = 100000 "centrons" (metres)
 Game.GALAXY_RADIUS = 100000;
-Game.NUM_SECTORS_X = 10;
+Game.NUM_SECTORS_X = 16;
 Game.NUM_SECTORS_Y = 8;
 Game.UPDATE_INTERVAL = 100;				// ten times a second
 Game.MAX_DELTA = 10000;
 Game.TARGET_LATENCY = 1000; // Maximum latency skew.
 //Game.RESTART_DELAY = 1000;
+
+// object type id's
+Game.PLAYERTYPEID = 1;
+Game.STARBASETYPEID = 2;
+Game.BASESTARTYPEID = 3;
+Game.FIGHTERTYPEID = 4;
+Game.CRUISERTYPEID = 5;
+Game.ASTEROIDTYPEID = 6;
+Game.PHOTONTYPEID = 7;
 
 /// Initialise the game world
 /// @param {difficulty} Difficulty level (? to ?)
@@ -190,7 +201,6 @@ Game.prototype.initialise = function(difficulty) {
 	
 	// When we start the game, we should randomly generate the game objects, but
 	// the players should not be removed.
-	var sx = Game.GALAXY_RADIUS;
 
 	// TODO : game world should be generated according to difficulty level	
 	var id = 1;
@@ -204,32 +214,21 @@ Game.prototype.initialise = function(difficulty) {
 		}
 	}
 		
-	// other objects start at id 20
-	id = 20;
-	newObjects[id] = new StarBase(id, Math.random() * sx, Math.random() * sx, 100);
-	id += 1;
-	newObjects[id] = new StarBase(id, Math.random() * sx, Math.random() * sx, 100);
-	id += 1;
-	newObjects[id] = new StarBase(id, Math.random() * sx, Math.random() * sx, 100);
-	id += 1;
-	newObjects[id] = new StarBase(id, Math.random() * sx, Math.random() * sx, 100);
-	id += 1;
-	newObjects[id] = new ZylonBasestar(id, Math.random() * sx, Math.random() * sx, 100);
-	id += 1;
-	newObjects[id] = new ZylonBasestar(id, Math.random() * sx, Math.random() * sx, 100);
-	id += 1;
-	newObjects[id] = new ZylonFighter(id, Math.random() * sx, Math.random() * sx, 100);
-	id += 1;
-	newObjects[id] = new ZylonFighter(id, Math.random() * sx, Math.random() * sx, 100);
-	id += 1;
-	newObjects[id] = new ZylonCruiser(id, Math.random() * sx, Math.random() * sx, 100);
-	id += 1;
-	newObjects[id] = new ZylonCruiser(id, Math.random() * sx, Math.random() * sx, 100);
-	id += 1;
-	
-	this.lastId = id - 1;
-	
 	this.objects = newObjects;
+	
+	// now add other objects
+	// other objects start at id 20
+	this.lastId = 19;
+	var sx = Game.NUM_SECTORS_X;
+	var sy = Game.NUM_SECTORS_Y;
+	this.addObjectToSector(Game.STARBASETYPEID, Math.random() * sx, Math.random() * sy, 100);
+	this.addObjectToSector(Game.STARBASETYPEID, Math.random() * sx, Math.random() * sy, 100);
+	this.addObjectToSector(Game.BASESTARTYPEID, Math.random() * sx, Math.random() * sy, 100);
+	this.addObjectToSector(Game.BASESTARTYPEID, Math.random() * sx, Math.random() * sy, 100);
+	this.addObjectToSector(Game.FIGHTERTYPEID, Math.random() * sx, Math.random() * sy, 100);
+	this.addObjectToSector(Game.FIGHTERTYPEID, Math.random() * sx, Math.random() * sy, 100);
+	this.addObjectToSector(Game.CRUISERTYPEID, Math.random() * sx, Math.random() * sy, 100);
+	this.addObjectToSector(Game.CRUISERTYPEID, Math.random() * sx, Math.random() * sy, 100);
 };
 
 /// Set the game rolling
@@ -250,7 +249,39 @@ Game.prototype.addPlayer = function(name) {
 			break;
 		}
 	}
-	
+};
+
+/// Add a game object to a sector
+Game.prototype.addObjectToSector = function(type, sectorX, sectorY, health) {
+	var newObject;
+	// place the new object in the centre of the specified sector
+	// FUTURE: add slight randomisation of coords?
+	var sectorSize = Game.GALAXY_RADIUS / Game.NUM_SECTORS_X;
+	sectorX = Math.floor(sectorX);
+	sectorY = Math.floor(sectorY);
+	var cx = (sectorX + 0.5) * sectorSize;
+	var cy = (sectorY + 0.5) * sectorSize;
+ 
+	var id = this.lastId + 1;
+ 
+	if (type == Game.STARBASETYPEID)
+		newObject = new StarBase(id, cx, cy, health);
+	else if (type == Game.BASESTARTYPEID)
+		newObject = new ZylonBaseStar(id, cx, cy, health);
+	else if (type == Game.FIGHTERTYPEID)
+		newObject = new ZylonFighter(id, cx, cy, health);
+	else if (type == Game.CRUISERTYPEID)
+		newObject = new ZylonCruiser(id, cx, cy, health);
+	//else if (type == Game.ASTEROIDTYPEID)
+	//	this.objects[id] = new Asteroid(id, cx, cy, health);
+
+	if (newObject != null)
+		{
+		this.objects[id] = newObject;
+		this.lastId = id;
+		}
+
+	return newObject
 };
 
 /// Get the starbase which is closest to the specified coords
@@ -260,7 +291,7 @@ Game.prototype.getNearestStarbase = function(x, y)
 	var closestStarbase;
 	for (var objId in this.objects) {
 		var obj = this.objects[objId];
-		if (obj.type == "starbase") {
+		if (obj.type == Game.STARBASETYPEID) {
 			var d = Math.sqrt(Math.pow((x - obj.x), 2) + Math.pow((y - obj.y), 2)); 
 			if (d < minDist) {
 				minDist = d;
@@ -289,7 +320,7 @@ Game.prototype.updateState = function(delta) {
 	
 	for (var objId in this.objects) {
 		var obj = this.objects[objId];
-		if (obj.type == "basestar") {
+		if (obj.type == Game.BASESTARTYPEID) {
 			// Find nearest starbase and move towards it
 			var closestStarbase = this.getNearestStarbase(obj.x, obj.y);
 			if (closestStarbase) {
@@ -299,12 +330,12 @@ Game.prototype.updateState = function(delta) {
 				obj.y += ((closestStarbase.x - obj.y) / d) * 100;
 			}
 		}
-		else if (obj.type == "fighter") {
+		else if (obj.type == Game.FIGHTERTYPEID) {
 			// Move around randomly
 			obj.x += 10;
 			obj.y += 10;
 		}
-		else if (obj.type == "cruiser") {
+		else if (obj.type == Game.CRUISERTYPEID) {
 			// Move around randomly
 			obj.x += 10;
 			obj.y += 10;
@@ -392,28 +423,22 @@ Game.prototype.loadState = function(serialized) {
 
 	for (var id in objectsIn) {
 		var obj = objectsIn[id];
-		console.log(obj.type);
-/*    
+		//console.log(obj.type);
+ 
 		// Depending on type, instantiate.
-		if (obj.type == 'blob') {
-			this.state.objects[obj.id] = new Blob(obj);
-		} else if (obj.type == 'player') {
-			this.state.objects[obj.id] = new Player(obj);
-		}
-*/
-		if (obj.type == "player") {
+		if (obj.type == Game.PLAYERTYPEID) {
 			this.objects[obj.id] = new Player(obj.id, obj.name, obj.x, obj.y);
 		}
-		else if (obj.type == "starbase") {
+		else if (obj.type == Game.STARBASETYPEID) {
 			this.objects[obj.id] = new StarBase(obj.id, obj.x, obj.y, obj.health);
 		}
-		else if (obj.type == "basestar") {
-			this.objects[obj.id] = new ZylonBasestar(obj.id, obj.x, obj.y, obj.health);
+		else if (obj.type == Game.BASESTARTYPEID) {
+			this.objects[obj.id] = new ZylonBaseStar(obj.id, obj.x, obj.y, obj.health);
 		}
-		else if (obj.type == "fighter") {
+		else if (obj.type == Game.FIGHTERTYPEID) {
 			this.objects[obj.id] = new ZylonFighter(obj.id, obj.x, obj.y, obj.health);
 		}
-		else if (obj.type == "cruiser") {
+		else if (obj.type == Game.CRUISERTYPEID) {
 			this.objects[obj.id] = new ZylonCruiser(obj.id, obj.x, obj.y, obj.health);
 		}
 
@@ -443,6 +468,6 @@ exports.Game = Game;
 exports.Player = Player;
 exports.ZylonFighter = ZylonFighter;
 exports.ZylonCruiser = ZylonCruiser;
-exports.ZylonBasestar = ZylonBasestar;
+exports.ZylonBaseStar = ZylonBaseStar;
 
 })(typeof global === "undefined" ? window : exports);

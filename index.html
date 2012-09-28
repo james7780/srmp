@@ -16,27 +16,28 @@
     <link rel="stylesheet" href="lib/smoke.css">
     <link href='http://fonts.googleapis.com/css?family=Bowlby+One+SC' rel='stylesheet' type='text/css'>
 -->
+	<LINK rel="stylesheet" type="text/css" href="style.css">
   </head>
   <body>
-
+    <div id="logo"><H2>Star Raiders Multiplayer</H2></div>
     <div id="outer">
-      <div id="logo">Star Raiders Multiplayer</div>
-      <div id="buttons">
+      <div id="buttons" style="padding: 4px">
         <button id="connect" onClick=startClient('net://localhost:8765');>Connect To Server</button>
         <button id="start" onClick=startGame();>Start Game</button>
       </div>
-	    <div id="debugoutput">...debug...</div>
+	    <div id="debugoutput" style="padding: 4px">...debug...</div>
 
-      <canvas id="canvas" width="640" height="480"></canvas>
+      <canvas id="canvas" width="800" height="400"></canvas>
       <audio id="audio"></audio>
 
       <div id="hud">
-        <div id="buttons">
+        <div id="buttons" style="padding: 4px">
+					Name: <input type="text" id="playerName"></input>
           <button id="join" onClick=joinClient();>Join</button>
-          <button id="music">Music</button>
+          <!-- <button id="music">Music</button> -->
         </div>
 
-        <div id="info">
+        <div id="info" style="padding: 4px">
           <div>
             <span id="player-count">0</span> players.
           </div>
