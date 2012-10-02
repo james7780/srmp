@@ -1,19 +1,19 @@
 [Open Files]
 Active File Display Mode=3
-Active File Index=2
-Open File Line0=0
-Open File Line1=11820
+Active File Index=0
+Open File Line0=5369
+Open File Line1=7020
 Open File Line2=908
-Open File Line3=1706
-Open File Line4=0
-Open File Pos0=433
-Open File Pos1=12193
-Open File Pos2=1658
+Open File Line3=0
+Open File Line4=2821
+Open File Pos0=6047
+Open File Pos1=7524
+Open File Pos2=1718
 Open File Pos3=2218
-Open File Pos4=338
-Open File Window Pos0=0,1,-1,-1,-4,-28,27,27,1093,472
+Open File Pos4=2990
+Open File Window Pos0=2,3,-1,-1,-4,-28,27,27,1093,472
 Open File Window Pos1=0,1,-1,-1,-4,-28,54,54,1120,499
-Open File Window Pos2=2,3,-1,-1,-4,-28,81,81,1147,526
+Open File Window Pos2=0,1,-1,-1,-4,-28,81,81,1147,526
 Open File Window Pos3=0,1,-1,-1,-4,-28,108,108,1174,553
 Open File Window Pos4=0,1,-1,-1,-4,-28,135,135,1201,580
 Open File0=.\client.js
@@ -26,4 +26,4 @@ Remember Files=1
 
 [Project Information]
 Project Start=DC07090005001C000E000F002E00000058
-Working Time=8420
+Working Time=12685

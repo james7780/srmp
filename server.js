@@ -110,6 +110,23 @@ function serverListener(socket) { //'connection' listener
 			}
 	});
 
+	/// Handle "leave" request from a client
+	socket.on('leave', function(data) {
+		console.log('leave request from ' + data.name);		//socket.id);		// externaladdress?
+
+		// add player to the game
+		game.removePlayer(data.name);
+
+		// Broadcast that client has left
+		socket.broadcast.emit('leave', data);
+		// And tell client that is has left
+		data.isme = true;
+		socket.emit('leave', data);
+		
+		// Push game state to client (will be minus the left player)
+		socket.emit('state', {state: game.getState()});
+	});
+	
 	// Test we can get game world started
 	var Game = galaxyjs.Game;
 	var game = new Game();

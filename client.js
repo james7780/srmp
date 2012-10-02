@@ -1,6 +1,7 @@
 //document.addEventListener('DOMContentLoaded', function() {
 
-var renderer;
+var renderer = null;
+var playerId = null;
 
 /// Set up the client, using the specified connection
 function startClient(address) {
@@ -11,6 +12,14 @@ function startClient(address) {
 	//socket = io.connect('http://localhost:8765');
 	socket = io.connect(address);
 
+	// Check after 4 seconds if connection failed
+	setTimeout(function() {
+		if (!socket.connected) {
+			//alert("Could not connect!");
+			document.getElementById('debugoutput').innerText = "Could not connect to server " + address + " !!!";
+		}
+	}, 4000);
+ 
 	game = new Game();					// defined in galaxy.js
 	playerId = null;
 	totalSkew = 0;
@@ -46,53 +55,20 @@ function startClient(address) {
 	    document.querySelector('#join').style.display = 'none';
 	  }
 	});
-*/	
-	socket.on('state', function(data) {
-		//game.load(data.state);
-		//alert("state recv: " + data.state.timeStamp);
-		//document.getElementById('debugoutput').innerText = data.state.timeStamp.toString();
-		
-		game.loadState(data.state);
-		// Number of clients that aren't playing.
-		document.getElementById('observer-count').innerText = game.getPlayerCount();
-		document.getElementById('player-count').innerText = game.getPlayerCount();
-		//document.getElementById('average-lag').innerText = Math.abs(updateDelta);  
-		
-		renderer.render();	
-	});
+*/
+
+	// Game state recieved from server
+	socket.on('state', onState);
 
 	// A new client has joined the game (could be me)
-	socket.on('join', function(data) {
-		console.log('recv join: ', data.name);
-		//game.join(data.name);
-		document.getElementById('debugoutput').innerText = "Player " + data.name + " joined the game";
-		if (data.isme) {
-			playerId = data.name;
-			
-			// Set the hash
-			window.location.hash = '#' + data.name;
-			//alert("join acknowledged");
-		}
+	socket.on('join', onJoin);
 
-		renderer.render();
-	});
-	
-	socket.on('start', function(data) {
-		console.log("Player " + data.name + " has started the game");
-		document.getElementById('debugoutput').innerText = "Player " + data.name + " has started the game";
-		
-		// Set client "running" state here
-	});	
-/*
+	// Someone has started the game
+	socket.on('start', onStart);
+
 	// A client leaves.
-	socket.on('leave', function(data) {
-	  console.log('recv leave', data);
-	  if (playerId == data.name) {
-	    gameover('you were absorbed. play again?');
-	  }
-	  game.leave(data.name);
-	});
-	
+	socket.on('leave', onLeave);
+/*
 	// A client shoots.
 	socket.on('shoot', function(data) {
 	  console.log('recv shoot', data.timeStamp, (new Date()).valueOf());
@@ -181,3 +157,51 @@ function startGame() {
 	socket.emit('start', {name: 'James'});
 };
 
+/// Client wants to leave the game
+function leaveClient() {
+	socket.emit('leave', {name: playerId});
+};
+
+/// "State" message handler
+function onState(data) {
+		game.loadState(data.state);
+		// Number of clients that aren't playing.
+		document.getElementById('observer-count').innerText = game.getPlayerCount();
+		document.getElementById('player-count').innerText = game.getPlayerCount();
+		//document.getElementById('average-lag').innerText = Math.abs(updateDelta);  
+	
+		renderer.render();	
+};
+
+/// "Join" message handler
+function onJoin(data) {
+		console.log('recv join: ', data.name);
+		//game.join(data.name);
+		document.getElementById('debugoutput').innerText = "Player " + data.name + " joined the game";
+		if (data.isme) {
+			playerId = data.name;
+			
+			// Set the hash
+			window.location.hash = '#' + data.name;
+			//alert("join acknowledged");
+		}
+
+		renderer.render();
+};
+
+/// "Game started" message handler
+function onStart(data) {
+		console.log("Player " + data.name + " has started the game");
+		document.getElementById('debugoutput').innerText = "Player " + data.name + " has started the game";
+	
+		// Set client "running" state here?
+};
+
+function onLeave(data) {
+	  console.log('recv leave', data);
+		document.getElementById('debugoutput').innerText = "Player " + data.name + " has left the game";
+	  if (playerId == data.name) {
+	    //gameover('you were absorbed. play again?');
+	  }
+	  //game.leave(data.name);
+};

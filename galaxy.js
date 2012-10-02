@@ -251,6 +251,19 @@ Game.prototype.addPlayer = function(name) {
 	}
 };
 
+/// Remove a player from the game
+Game.prototype.removePlayer = function(name) {
+	// Find the player object and remove it
+	for (var id = 1; id < 20; id++) {
+		var playerObj = this.objects[id];
+		if (playerObj != null && playerObj.name == name) {
+			this.objects[id] = null;
+			console.log("Game removed player " + name);
+			break;
+		}
+	}
+};
+
 /// Add a game object to a sector
 Game.prototype.addObjectToSector = function(type, sectorX, sectorY, health) {
 	var newObject;
