@@ -52,6 +52,7 @@ Design/gameplay inspiration:
 - Star Trek
 - Solaris
 - Starmaster (Activision)
+- Star Luster (!) http://strategywiki.org/wiki/Star_Luster
 
 SCREENS:
 1. Title
