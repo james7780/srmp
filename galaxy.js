@@ -198,7 +198,7 @@ Game.PHOTONTYPEID = 7;
 /// @param {difficulty} Difficulty level (? to ?)
 Game.prototype.initialise = function(difficulty) {
 	this.tickCount = 0;
-	
+
 	// When we start the game, we should randomly generate the game objects, but
 	// the players should not be removed.
 
@@ -213,9 +213,9 @@ Game.prototype.initialise = function(difficulty) {
 			newObjects[obj.id] = new Player(obj.id, obj.name, obj.x, obj.y);
 		}
 	}
-		
+
 	this.objects = newObjects;
-	
+
 	// now add other objects
 	// other objects start at id 20
 	this.lastId = 19;
@@ -234,7 +234,7 @@ Game.prototype.initialise = function(difficulty) {
 /// Set the game rolling
 Game.prototype.start = function() {
 	this.tickCount = 1;
-	
+
 	// Note: callback timer is handled by server.js
 };
 
@@ -396,6 +396,8 @@ Game.prototype.updateState = function(delta) {
   }
   */
 	//return newState;
+	
+	this.tickCount += 1;
 };
 
 /**

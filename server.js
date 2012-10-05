@@ -25,6 +25,8 @@ var socketList = [];
 
 var intervalId;
 
+var game;
+
 // Handle data recieved on a socket
 function socketData(data) {
 	console.log(data.toString());
@@ -127,10 +129,12 @@ function serverListener(socket) { //'connection' listener
 		socket.emit('state', {state: game.getState()});
 	});
 	
-	// Test we can get game world started
-	var Game = galaxyjs.Game;
-	var game = new Game();
-	game.initialise(1);
+	// Create the game world if it is not already created
+	//var Game = galaxyjs.Game;
+	if (game == null) {
+		game = new galaxyjs.Game();
+		game.initialise(1);
+	}
 };
 
 //var server = net.createServer(serverListener);
