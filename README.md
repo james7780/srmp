@@ -17,3 +17,8 @@ The server is written in node.js:
   - Manages the game world
   - Communicates with clients (players)
 
+Running
+  - Install Node
+  - Run npm install socket.io
+  - Run node server.js
+  - Open index.html using a browser
