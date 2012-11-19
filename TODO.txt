@@ -1,0 +1,11 @@
+TODO :
+
+Server:
+- Implement object game logic
+	- Per object, make decisions
+- Implement rules for adjusting difficulty based on number of players
+	- Global difficulty level
+	- Transmitted from server periodically 
+- Implement win/lose logic
+- Implement high-score table
+- 
