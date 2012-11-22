@@ -1,10 +1,10 @@
 
-/*
-	Star Raiders Multiplayer - Game world data
-	Copyright James Higgs 2012
-
-	- Game world data, rules and functions
-*/
+//
+//	Star Raiders Multiplayer - Game world data
+//	Copyright James Higgs 2012
+//
+//	- Game world data, rules and functions
+//
 
 // namespace?
 (function(exports) {
@@ -28,9 +28,10 @@ function toJSON(object) {
 
 
 // objects (FUTURE: inherit all game objects from base class)
-/**
- * Player object
- */
+
+//
+// Player object
+//
 function Player(id, name, x, y)
 {
 	//assert ((this instanceof Player), "Must use new operator!");
@@ -50,18 +51,24 @@ function Player(id, name, x, y)
 	}
 }
 
+// Update the new state of this player
+Player.prototype.updateState = function(delta) {
+	// TODO: dampen vx and vy slightly?
+	this.x += 1;	//this.vx * delta/10;
+	this.y += 1;		//this.vy * delta/10;
+};
+
 // Create a new state for this player in the future
 Player.prototype.computeState = function(delta) {
 	// TODO: dampen vx and vy slightly?
 	var newPlayer = new this.constructor(this.toJSON());
-	newPlayer.x += 1;	//this.vx * delta/10;
-	newPlayer.y += 1;		//this.vy * delta/10;
+	newPlayer.updateState(delta);
 	return newPlayer;
 };
 
-/**
- * Starbase object
- */
+//
+// Starbase object
+//
 function StarBase(id, x, y, health)
 {
 	//assert ((this instanceof StarBase), "Must use new operator!");
@@ -73,18 +80,24 @@ function StarBase(id, x, y, health)
 	this.hp = health;	
 }
 
+// update the state for this starbase
+StarBase.prototype.updateState = function(delta) {
+	// TODO: dampen vx and vy slightly?
+	this.x += 1;	//this.vx * delta/10;
+	this.y += 1;		//this.vy * delta/10;
+};
+
 // Create a new state for this starbase in the future
 StarBase.prototype.computeState = function(delta) {
 	// TODO: dampen vx and vy slightly?
 	var newStarbase = new this.constructor(this.toJSON());
-	newStarbase.x += 1;	//this.vx * delta/10;
-	newStarbase.y += 1;		//this.vy * delta/10;
+	newStarbase.updateState(delta);
 	return newStarbase;
 };
 
-/**
- * Zylon fighter object
- */
+//
+// Zylon fighter object
+//
 function ZylonFighter(id, x, y, health)
 {
 	//assert ((this instanceof ZylonFighter), "Must use new operator!");
@@ -98,18 +111,24 @@ function ZylonFighter(id, x, y, health)
 	this.bcnt = 0;				// behaviour-related counter
 }
 
+// Update the state for this zylon fighter
+ZylonFighter.prototype.updateState = function(delta) {
+	// TODO: dampen vx and vy slightly?
+	this.x += 1;	//this.vx * delta/10;
+	this.y += 1;		//this.vy * delta/10;
+};
+
 // Create a new state for this zylon fighter in the future
 ZylonFighter.prototype.computeState = function(delta) {
 	// TODO: dampen vx and vy slightly?
 	var newFighter = new this.constructor(this.toJSON());
-	newFighter.x += 1;	//this.vx * delta/10;
-	newFighter.y += 1;		//this.vy * delta/10;
+	newFighter.updateState(delta);
 	return newFighter;
 };
 
-/**
- * Zylon cruiser object
- */
+//
+// Zylon cruiser object
+//
 function ZylonCruiser(id, x, y, health)
 {
 	//assert ((this instanceof ZylonCruiser), "Must use new operator!");
@@ -123,18 +142,24 @@ function ZylonCruiser(id, x, y, health)
 	this.bcnt = 0;				// behaviour-related counter
 }
 
+// Update the state for this zylon cruiser
+ZylonCruiser.prototype.updateState = function(delta) {
+	// TODO: dampen vx and vy slightly?
+	this.x += 1;	//this.vx * delta/10;
+	this.y += 1;		//this.vy * delta/10;
+};
+
 // Create a new state for this zylon cruiser in the future
 ZylonCruiser.prototype.computeState = function(delta) {
 	// TODO: dampen vx and vy slightly?
 	var newCruiser = new this.constructor(this.toJSON());
-	newCruiser.x += 1;	//this.vx * delta/10;
-	newCruiser.y += 1;		//this.vy * delta/10;
+	newCruiser.updateState(delta);
 	return newCruiser;
 };
 
-/**
- * Zylon Basestar object
- */
+//
+// Zylon Basestar object
+//
 function ZylonBaseStar(id, x, y, health)
 {
 	//assert ((this instanceof ZylonBasestar), "Must use new operator!");
@@ -146,21 +171,40 @@ function ZylonBaseStar(id, x, y, health)
 	this.hp = health;
 	this.bvr = 0;					// behaviour
 	this.bcnt = 0;				// behaviour-related counter
+	this.closestStarbase = null;
+
 }
+
+// update the state for this zylon basestar
+ZylonBaseStar.prototype.updateState = function(delta) {
+	// TODO: dampen vx and vy slightly?
+	//this.x += 1;	//this.vx * delta/10;
+	//this.y += 1;		//this.vy * delta/10;
+	
+	// need vector class!
+	if (this.closestStarbase != null) {
+		var d = Math.sqrt(Math.pow((this.closestStarbase.x - this.x), 2) + Math.pow((this.closestStarbase.y - this.y), 2));
+		if (d > 500) {
+			var dx = (this.closestStarbase.x - this.x) / d;
+			var dy = (this.closestStarbase.y - this.y) / d;
+			this.x += dx * 100;						// 1000 m/s = 100 m per 100 ms.
+			this.y += dy * 100;
+		}
+	}
+};
 
 // Create a new state for this zylon basestar in the future
 ZylonBaseStar.prototype.computeState = function(delta) {
 	// TODO: dampen vx and vy slightly?
 	var newBasestar = new this.constructor(this.toJSON());
-	newBasestar.x += 1;	//this.vx * delta/10;
-	newBasestar.y += 1;		//this.vy * delta/10;
+	newBasestar.updateState(delta);
 	return newBasestar;
 };
 
 
-/**
- * The game instance (singleton) that's shared across all clients and the server
- */
+//
+// The game instance (singleton) that's shared across all clients and the server
+//
 var Game = function() {
 	this.objects = {};
 	this.oldState = {};
@@ -316,9 +360,9 @@ Game.prototype.getNearestStarbase = function(x, y)
 	return closestStarbase;
 };
 
-/**
- * Step the game world forward by 1 tick (UPDATE_INTERVAL milliseconds)
- */
+//
+// Step the game world forward by 1 tick (UPDATE_INTERVAL milliseconds)
+//
 Game.prototype.updateState = function(delta) {
 
 	//var newState = {
@@ -338,20 +382,20 @@ Game.prototype.updateState = function(delta) {
 			var closestStarbase = this.getNearestStarbase(obj.x, obj.y);
 			if (closestStarbase) {
 				// need vector class!
-				var d = Math.sqrt(Math.pow((closestStarbase.x - obj.x), 2) + Math.pow((closestStarbase.y - obj.y), 2));
-				obj.x += ((closestStarbase.x - obj.x) / d) * 100;
-				obj.y += ((closestStarbase.x - obj.y) / d) * 100;
+				//var d = Math.sqrt(Math.pow((closestStarbase.x - obj.x), 2) + Math.pow((closestStarbase.y - obj.y), 2));
+				//obj.x += ((closestStarbase.x - obj.x) / d) * 100;
+				//obj.y += ((closestStarbase.x - obj.y) / d) * 100;
+				obj.closestStarbase = closestStarbase;
+				obj.updateState(delta);
 			}
 		}
 		else if (obj.type == Game.FIGHTERTYPEID) {
 			// Move around randomly
-			obj.x += 10;
-			obj.y += 10;
+			obj.updateState(delta);
 		}
 		else if (obj.type == Game.CRUISERTYPEID) {
 			// Move around randomly
-			obj.x += 10;
-			obj.y += 10;
+			obj.updateState(delta);
 		}
 	}
 /*
@@ -400,10 +444,10 @@ Game.prototype.updateState = function(delta) {
 	this.tickCount += 1;
 };
 
-/**
- * Save the game state.
- * @return {object} JSON of the game state
- */
+//
+// Save the game state.
+// @return {object} JSON of the game state
+//
 Game.prototype.getState = function() {
 	var serialized = {
 		objects: {},
@@ -420,10 +464,10 @@ Game.prototype.getState = function() {
 	return serialized;
 };
 
-/**
- * Load the game state.
- * @param {object} gameState JSON of the game state
- */
+//
+// Load the game state.
+// @param {object} gameState JSON of the game state
+//
 Game.prototype.loadState = function(serialized) {
 	//console.log(savedState.objects);
 	var objectsIn = serialized.objects;
@@ -464,9 +508,9 @@ Game.prototype.loadState = function(serialized) {
 	}	// next object
 };
 
-/**
- * How many players are currently playing?
- */
+//
+// How many players are currently playing?
+//
 Game.prototype.getPlayerCount = function() {
 	this.playerCount = 0;
 	for (var id in this.objects) {

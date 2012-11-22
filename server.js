@@ -69,7 +69,7 @@ function serverListener(socket) { //'connection' listener
 																	socket.emit('state', {state: game.getState()});
 																}, 1000);				// game tick callback
 */
-			intervalId = setInterval(updateGame, 500, game);
+			intervalId = setInterval(updateGame, 200, game);
 						
 			// Broadcast start message
 			socket.broadcast.emit('start', data);
