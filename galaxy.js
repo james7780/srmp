@@ -107,6 +107,7 @@ function ZylonFighter(id, x, y, health)
 	this.x = x;
 	this.y = y;
 	this.hp = health;
+	this.parentObj = null;		// parent basestar
 	this.bvr = 0;					// behaviour
 	this.bcnt = 0;				// behaviour-related counter
 }
@@ -116,6 +117,23 @@ ZylonFighter.prototype.updateState = function(delta) {
 	// TODO: dampen vx and vy slightly?
 	this.x += 1;	//this.vx * delta/10;
 	this.y += 1;		//this.vy * delta/10;
+	
+		// do not stray too far from parent basestar
+	// FUTURE : Patrol basestar
+	if (this.parentObj != null) {
+		var d = Math.sqrt(Math.pow((this.parentObj.x - this.x), 2) + Math.pow((this.parentObj.y - this.y), 2));
+		if (d > 3000) {
+			var dx = (this.parentObj.x - this.x) / d;
+			var dy = (this.parentObj.y - this.y) / d;
+			this.x += dx * 100;						// 1000 m/s = 100 m per 100 ms.
+			this.y += dy * 100;
+		}
+	}
+	
+	if (0 == this.bcnt)
+		this.bcnt = 30;
+		
+	this.bcnt = this.bcnt - 1;		// bcnt--	
 };
 
 // Create a new state for this zylon fighter in the future
@@ -138,6 +156,7 @@ function ZylonCruiser(id, x, y, health)
 	this.x = x;
 	this.y = y;
 	this.hp = health;
+	this.parentObj = null;		// parent basestar
 	this.bvr = 0;					// behaviour
 	this.bcnt = 0;				// behaviour-related counter
 }
@@ -147,6 +166,23 @@ ZylonCruiser.prototype.updateState = function(delta) {
 	// TODO: dampen vx and vy slightly?
 	this.x += 1;	//this.vx * delta/10;
 	this.y += 1;		//this.vy * delta/10;
+	
+	// do not stray too far from parent basestar
+	// FUTURE : Patrol basestar
+	if (this.parentObj != null) {
+		var d = Math.sqrt(Math.pow((this.parentObj.x - this.x), 2) + Math.pow((this.parentObj.y - this.y), 2));
+		if (d > 3000) {
+			var dx = (this.parentObj.x - this.x) / d;
+			var dy = (this.parentObj.y - this.y) / d;
+			this.x += dx * 100;						// 1000 m/s = 100 m per 100 ms.
+			this.y += dy * 100;
+		}
+	}	
+	
+	if (0 == this.bcnt)
+		this.bcnt = 50;
+		
+	this.bcnt = this.bcnt - 1;		// bcnt--
 };
 
 // Create a new state for this zylon cruiser in the future
@@ -217,6 +253,9 @@ var Game = function() {
 	this.tickCount = 0;
 	// Timer for the update loop.
 	this.timer = null;
+	
+	// Current target starbase for the Zylon basestars
+	this.targetStarbase = null;
 };
 
 // defines (magic numbers)
@@ -265,14 +304,23 @@ Game.prototype.initialise = function(difficulty) {
 	this.lastId = 19;
 	var sx = Game.NUM_SECTORS_X;
 	var sy = Game.NUM_SECTORS_Y;
+	// set first starbase as the initial target
+	this.targetStarbase = this.addObjectToSector(Game.STARBASETYPEID, Math.random() * sx, Math.random() * sy, 100);
 	this.addObjectToSector(Game.STARBASETYPEID, Math.random() * sx, Math.random() * sy, 100);
-	this.addObjectToSector(Game.STARBASETYPEID, Math.random() * sx, Math.random() * sy, 100);
-	this.addObjectToSector(Game.BASESTARTYPEID, Math.random() * sx, Math.random() * sy, 100);
-	this.addObjectToSector(Game.BASESTARTYPEID, Math.random() * sx, Math.random() * sy, 100);
-	this.addObjectToSector(Game.FIGHTERTYPEID, Math.random() * sx, Math.random() * sy, 100);
-	this.addObjectToSector(Game.FIGHTERTYPEID, Math.random() * sx, Math.random() * sy, 100);
-	this.addObjectToSector(Game.CRUISERTYPEID, Math.random() * sx, Math.random() * sy, 100);
-	this.addObjectToSector(Game.CRUISERTYPEID, Math.random() * sx, Math.random() * sy, 100);
+	// add 2 basestars + thier retinue
+	var tx = Math.random() * sx;
+	var ty = Math.random() * sy;
+	this.addObjectToSector(Game.BASESTARTYPEID, tx, ty, 100);
+	this.addObjectToSector(Game.FIGHTERTYPEID, tx, ty, 100);
+	this.addObjectToSector(Game.FIGHTERTYPEID, tx, ty, 100);
+	this.addObjectToSector(Game.CRUISERTYPEID, tx, ty, 100);
+	tx = Math.random() * sx;
+	ty = Math.random() * sy;
+	this.addObjectToSector(Game.BASESTARTYPEID, tx, ty, 100);
+	this.addObjectToSector(Game.FIGHTERTYPEID, tx, ty, 100);
+	this.addObjectToSector(Game.FIGHTERTYPEID, tx, ty, 100);
+	this.addObjectToSector(Game.CRUISERTYPEID, tx, ty, 100);
+
 };
 
 /// Set the game rolling
@@ -312,12 +360,11 @@ Game.prototype.removePlayer = function(name) {
 Game.prototype.addObjectToSector = function(type, sectorX, sectorY, health) {
 	var newObject;
 	// place the new object in the centre of the specified sector
-	// FUTURE: add slight randomisation of coords?
 	var sectorSize = Game.GALAXY_RADIUS / Game.NUM_SECTORS_X;
 	sectorX = Math.floor(sectorX);
 	sectorY = Math.floor(sectorY);
-	var cx = (sectorX + 0.5) * sectorSize;
-	var cy = (sectorY + 0.5) * sectorSize;
+	var cx = (sectorX + 0.2 + Math.random() * 0.6) * sectorSize;			// place objects randomly in the sector
+	var cy = (sectorY + 0.2 + Math.random() * 0.6) * sectorSize;
  
 	var id = this.lastId + 1;
  
@@ -341,23 +388,24 @@ Game.prototype.addObjectToSector = function(type, sectorX, sectorY, health) {
 	return newObject
 };
 
-/// Get the starbase which is closest to the specified coords
-Game.prototype.getNearestStarbase = function(x, y)
+/// Get the object of the specified type which is closest to the specified coords
+Game.prototype.getNearestUnit = function(type, x, y)
 {
 	var minDist = Game.GALAXY_RADIUS;
-	var closestStarbase;
+	var closestUnit;
 	for (var objId in this.objects) {
 		var obj = this.objects[objId];
-		if (obj.type == Game.STARBASETYPEID) {
+		if (obj.type == type) {
 			var d = Math.sqrt(Math.pow((x - obj.x), 2) + Math.pow((y - obj.y), 2)); 
 			if (d < minDist) {
 				minDist = d;
-				closestStarbase = obj;
+				closestUnit = obj;
 			}
 		}
 	}
 	
-	return closestStarbase;
+	console.log("getNearestUnit(type = " + type + ") returns " + closestUnit.id);
+	return closestUnit;
 };
 
 //
@@ -374,27 +422,43 @@ Game.prototype.updateState = function(delta) {
 	// Generate a new state based on the old one
 	
 	// Update the game state
-	
 	for (var objId in this.objects) {
 		var obj = this.objects[objId];
 		if (obj.type == Game.BASESTARTYPEID) {
-			// Find nearest starbase and move towards it
-			var closestStarbase = this.getNearestStarbase(obj.x, obj.y);
-			if (closestStarbase) {
+			// Make sure we have a valid target starbase
+			if (this.targetStarbase == null) {
+				this.targetStarbase = this.getNearestUnit(Game.STARBASETYPEID, obj.x, obj.y);
+				console.log("target starbase changed to: " + this.targetStarbase.id);
+			}
+
+			// Move towards the target starbase
+			if (this.targetStarbase) {
 				// need vector class!
 				//var d = Math.sqrt(Math.pow((closestStarbase.x - obj.x), 2) + Math.pow((closestStarbase.y - obj.y), 2));
 				//obj.x += ((closestStarbase.x - obj.x) / d) * 100;
 				//obj.y += ((closestStarbase.x - obj.y) / d) * 100;
-				obj.closestStarbase = closestStarbase;
+				obj.closestStarbase = this.targetStarbase;
 				obj.updateState(delta);
 			}
 		}
 		else if (obj.type == Game.FIGHTERTYPEID) {
-			// Move around randomly
+			// Make sure we have a valid "parent" basestar
+			if (obj.parentObj == null && 0 == obj.bcnt) {
+				obj.parentObj = this.getNearestUnit(Game.BASESTARTYPEID, obj.x, obj.y);
+				console.log("fighter parent basestar changed to: " + this.parentObj);
+			}
+
+			// Move yourself
 			obj.updateState(delta);
 		}
 		else if (obj.type == Game.CRUISERTYPEID) {
-			// Move around randomly
+			// Make sure we have a valid "parent" basestar
+			if (obj.parentObj == null && 0 == obj.bcnt) {
+				obj.parentObj = this.getNearestUnit(Game.BASESTARTYPEID, obj.x, obj.y);
+				console.log("cruiser parent basestar changed to: " + this.parentObj);
+			}
+
+			// Move yourself
 			obj.updateState(delta);
 		}
 	}

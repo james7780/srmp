@@ -70,25 +70,27 @@ Objects:
 Starbase
 	- Does not move
 	- Used for resupply
-	- Heavily shielded (1000 heal
+	- Heavily shielded (1000 health)
 
 Zylon fighter
 	- Fast moving
 	- No shield
 
 Zylon cruiser
-	- Slower moving
+	- Slower moving 
 	- Lightly shielded
 	- Patrol pattern (around basestar)
-	- Do not attack unless provoked
+	- Does not attack unless provoked
 
 Zylon Basestar
 	- Slower moving
-	- Heavily shielded
+	- Heavily shielded (and shield regenerates slowly)
 	- Can only be attacked from close range
+	- Slow to react (target starbase only calculated every 30 seconds)
+	- ALL basestars move toward the SAME starbase
 
-Zylon fleets (collection of basestar + cruisers + fighter) will surround a Starbase
-and eventually destroy it. They will only attempt to surround 1 starbase at a time. (For multiplayer with 4 players or more, we could change this rule).
+Zylon fleets (collection of basestar + cruisers + fighter) will surround the nearest Starbase
+and eventually destroy it. They will only attempt to surround 1 starbase at a time. (For multiplayer with 4 players or more, we could change this rule, maybe to n / 2 starbases).
 
 Meteor
 	- Fast moving
@@ -105,3 +107,13 @@ Tables:
 		- Long-range scan damaged (mirror image, or flickery)
 		- Sub-space radio (no status messages?)
 
+
+Other ideas:
+1. "Success meter" - shows your probability of winning (based on how many basestars are left and how close they are to their targets)
+2. Dynamic rating - your rating is calculated "real time" as displayed as you play
+3. Prevent boring/frustrating bits of dogfighting (eg: circling, bad collision detection)
+	- Attack patterns of enemies must be (mostly) predictable
+	- Avoid having enemies that are (too quick)
+        - Homing bullets/missiles
+	- Enemies can become damaged, either disabling/restricting their movement, or disabling their guns
+	- Damaged enemies head for the basestar for repair

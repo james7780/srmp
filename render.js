@@ -80,22 +80,22 @@ CanvasRenderer.prototype.render = function() {
 			var x = obj.x * scale;
 			var y = obj.y * scale;
 			//var name = obj.name;
-			this.drawRect(x, y, 2, 1, 'red', 1);
+			this.drawRect(x, y, 2, 1, 'orange', 1);
 			this.context.font = '8pt Calibri';
 			this.context.textBaseline = "top";
 			this.context.lineWidth = 1;
-			this.context.fillStyle = 'red';
+			this.context.fillStyle = 'orange';
 			this.context.fillText('fighter', x, y);
 		}
 		else if (obj.type == Game.CRUISERTYPEID) {
 			var x = obj.x * scale;
 			var y = obj.y * scale;
 			//var name = obj.name;
-			this.drawRect(x, y, 3, 1, 'red', 2);
+			this.drawRect(x, y, 3, 1, 'yellow', 2);
 			this.context.font = '8pt Calibri';
 			this.context.textBaseline = "top";
 			this.context.lineWidth = 1;
-			this.context.fillStyle = 'red';
+			this.context.fillStyle = 'yellow';
 			this.context.fillText('cruiser', x, y);
 		}
 	}	// next object
