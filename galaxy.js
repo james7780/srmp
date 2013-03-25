@@ -41,6 +41,8 @@ function Player(id, name, x, y)
 	this.name = name;
 	this.x = x;
 	this.y = y;
+	this.z = 0;
+	this.speed = 0;
 	this.fl = 100;					// "fuel". SR "energy max" = 9999
 	this.shd = 100;					// "shield"
 	this.dmg = "";					// "damage" ascii mask for damaged components (eg: C for computer, L for long-range scan, etc)
@@ -77,6 +79,7 @@ function StarBase(id, x, y, health)
 	this.id = id;
 	this.x = x;
 	this.y = y;
+	this.z = 0;
 	this.hp = health;	
 }
 
@@ -106,6 +109,7 @@ function ZylonFighter(id, x, y, health)
 	this.id = id;
 	this.x = x;
 	this.y = y;
+	this.z = 0;
 	this.hp = health;
 	this.parentObj = null;		// parent basestar
 	this.bvr = 0;					// behaviour
@@ -155,6 +159,7 @@ function ZylonCruiser(id, x, y, health)
 	this.id = id;
 	this.x = x;
 	this.y = y;
+	this.z = 0;
 	this.hp = health;
 	this.parentObj = null;		// parent basestar
 	this.bvr = 0;					// behaviour
@@ -204,6 +209,7 @@ function ZylonBaseStar(id, x, y, health)
 	this.id = id;
 	this.x = x;
 	this.y = y;
+	this.z = 0;
 	this.hp = health;
 	this.bvr = 0;					// behaviour
 	this.bcnt = 0;				// behaviour-related counter
