@@ -5,6 +5,13 @@ var playerId = null;
 
 /// Set up the client, using the specified connection
 function startClient(address) {
+
+	// Override default address if user has entered one
+	var enteredAddress = document.getElementById('serverURL').value;
+	
+	if (enteredAddress != "") {
+		address = "net://" + enteredAddress;
+	}
 	
 	document.getElementById('debugoutput').innerText = "Connecting to server " + address + "...";
 
