@@ -31,7 +31,9 @@
       </div>
 	    <div id="debugoutput" style="padding: 4px">...debug...</div>
 
-      <canvas id="canvas" width="800" height="400"></canvas>
+  		<!-- 3D rendering container-->
+      <canvas id="canvas" width="800" height="400" style="background-color: black;">
+      </canvas>
       <audio id="audio"></audio>
 
       <div id="hud">
@@ -63,16 +65,11 @@
     </footer>
 
     <a href="http://github.com/james7780/srmp">SRMP on GitHub</a>
-    
+
+		<!-- 3D rendering container-->
+    3D View:
     <div id="threeJSContainer">
-    	3D View
     </div>
 
-		<!-- Test 3D rendering -->
-    <script type="text/javascript">
-    	testThreeJSRenderer(document.getElementById('threeJSContainer'));
-    	//TestThreeJSRenderer(document.getElementById('canvas'));
-    </script>
-    
   </body>
 </html>

@@ -1,6 +1,7 @@
 //document.addEventListener('DOMContentLoaded', function() {
 
 var renderer = null;
+var renderer3D = null;
 var playerId = null;
 
 /// Set up the client, using the specified connection
@@ -38,6 +39,8 @@ function startClient(address) {
 	
 	renderer = new Renderer(game);
 	//renderer.render();
+	renderer3D = new Renderer3D(game);
+	
 /*
 	var input = new Input(game);
 	sound = new SoundManager();
@@ -177,7 +180,8 @@ function onState(data) {
 		document.getElementById('player-count').innerText = game.getPlayerCount();
 		//document.getElementById('average-lag').innerText = Math.abs(updateDelta);  
 	
-		renderer.render();	
+		renderer.render();
+		renderer3D.render();
 };
 
 /// "Join" message handler

@@ -21,8 +21,8 @@ var CanvasRenderer = function(game) {
 };
 
 CanvasRenderer.prototype.render = function() {
-	
- 	this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+	//this.context.fillStyle = 'black';
+	this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
 	// draw grid (keep square sector aspect ratio)
 	var sx = this.canvas.width;
